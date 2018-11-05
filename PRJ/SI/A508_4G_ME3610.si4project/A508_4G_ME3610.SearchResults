@@ -1,0 +1,7 @@
+---- GPIO_PIN_VDET Matches (1 in 1 files) ----
+DrvMcuPin.h (E:\1-source\6-A508_4G_ME3610\INCLUDE) line 201 : 
+#define GPIO_VDET               GPIOB//AIN2
+#define GPIO_PIN_VDET           GPIO_PIN_2
+
+/******************************************************************************
+;--------1-LED hardware macro define
