@@ -58,7 +58,9 @@ typedef struct {
     u8 getting_info_flag_count;
     u8 voice_tone_play_count;
     u8 ready_return_to_default_state_flag_count;
+    u8 poc_gps_value_for_display_flag_count;
   }Count;
+  bool poc_gps_value_for_display_flag2;
   u8 BacklightTimeBuf[1];//
   u8 KeylockTimeBuf[1];//
 }DEL_DRV;
@@ -117,6 +119,9 @@ void DEL_PowerOnInitial(void)//计时函数初始化
   DelDrvObj.Count.getting_info_flag_count=0;
   DelDrvObj.Count.voice_tone_play_count=0;
   DelDrvObj.Count.ready_return_to_default_state_flag_count=0;
+  DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
+  DelDrvObj.poc_gps_value_for_display_flag2=FALSE;
+  
   //DelDrvObj.BacklightTimeBuf[0]=0;
   DelDrvObj.KeylockTimeBuf[0]=0;
   
@@ -774,6 +779,10 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         }
       }
     }
+    else
+    {
+      DelDrvObj.Count.getting_info_flag_count=0;
+    }
 /****登录成功一分钟后禁用写频功能，开启外部定位上报模式*********/
     if(TaskDrvobj.Id==TASK_NORMAL)
     {
@@ -883,6 +892,21 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         return_group_and_clear_flag();//返回默认群组标志位
       }
     }
+/****定位成功后6s后在菜单模式下才能查看到经纬度信息（解决刚定位成功查看经纬度异常的问题）*********************************************************/
+    if(poc_gps_value_for_display_flag()==TRUE)
+    {
+      DelDrvObj.Count.poc_gps_value_for_display_flag_count++;
+      if(DelDrvObj.Count.poc_gps_value_for_display_flag_count>2*6)
+      {
+        DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
+        DelDrvObj.poc_gps_value_for_display_flag2=TRUE;
+      }
+    }
+    else
+    {
+      DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
+      DelDrvObj.poc_gps_value_for_display_flag2=FALSE;
+    }
   }
 }
 
@@ -942,4 +966,8 @@ u8 read_backlight_time_value(void)
 u8 read_key_lock_time_value(void)
 {
   return DelDrvObj.KeylockTimeBuf[0];
+}
+bool delay_gps_value_for_display_flag2(void)
+{
+  return DelDrvObj.poc_gps_value_for_display_flag2;
 }

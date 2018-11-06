@@ -141,7 +141,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
   case GpsInfoMenu:
      api_lcd_pwr_on_hint(0,0,GBK,"                ");//清屏
      api_lcd_pwr_on_hint(0,2,GBK,"                ");//清屏
-    if(poc_gps_value_for_display_flag()==FALSE)
+    if(delay_gps_value_for_display_flag2()==FALSE)
     {
       DISPLAY_Show(d_longitude_and_latitude0);
     }

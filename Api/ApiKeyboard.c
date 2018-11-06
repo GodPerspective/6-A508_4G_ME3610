@@ -477,7 +477,7 @@ void keyboard_process(void)
             break;
           case 1://=1，进入某群组
             VOICE_Play(GroupSelected);
-            DEL_SetTimer(0,40);
+            DEL_SetTimer(0,80);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_EnterGroup,0,0);
             KeyDownUpChoose_GroupOrUser_Flag=0;
@@ -486,7 +486,7 @@ void keyboard_process(void)
             break;
           case 2://=2,呼叫某用户
             VOICE_Play(GroupSelected);
-            DEL_SetTimer(0,40);
+            DEL_SetTimer(0,80);
             while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
             ApiPocCmd_WritCommand(PocComm_Invite,0,0);
             KeyDownUpChoose_GroupOrUser_Flag=0;
