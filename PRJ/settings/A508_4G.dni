@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=829051789
+Checksum=-946004046
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -85,14 +85,18 @@ Fmt16={W}1:cBuf[2]	4	0
 Fmt17={W}1:cID	4	0
 Fmt18={W}1:ccid_temp_count	3	0
 Fmt19={W}1:comma_count	3	0
-Fmt20={W}1:iCode	4	0
-Fmt21={W}1:pBuf	4	0
-Fmt22={W}1:pBuf[0]	5	0
-Fmt23={W}1:pBuf[1]	5	0
-Fmt24={W}1:pBuf[3]	5	0
-Fmt25={W}1:pBuf[4]	5	0
-Fmt26={W}1:ucId	3	0
-Fmt27={W}1:ulAllKeyID	4	0
+Fmt20={W}1:dp_network_search[0]	4	0
+Fmt21={W}1:dp_network_search[1]	4	0
+Fmt22={W}1:dp_network_search[2]	4	0
+Fmt23={W}1:dp_network_search[3]	4	0
+Fmt24={W}1:iCode	4	0
+Fmt25={W}1:pBuf	4	0
+Fmt26={W}1:pBuf[0]	5	0
+Fmt27={W}1:pBuf[1]	5	0
+Fmt28={W}1:pBuf[3]	5	0
+Fmt29={W}1:pBuf[4]	5	0
+Fmt30={W}1:ucId	3	0
+Fmt31={W}1:ulAllKeyID	4	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
@@ -105,9 +109,12 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiDisplay.c}.876.1" 0 0 0 0 "" 0 ""
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiDisplay.c}.876.3" 0 0 0 0 "" 0 ""
 Bp1=_ "STD_CODE" "{$PROJ_DIR$\..\Drv\DrvGT20L16S1Y.c}.342.1" 0 0 0 0 "" 0 ""
-Count=2
+Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiDelay.c}.743.9" 1 0 0 0 "" 0 ""
+Bp3=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiKeyCmd.c}.272.5" 1 0 0 0 "" 0 ""
+Bp4=_ "STD_CODE" "{$PROJ_DIR$\..\User\Task.c}.257.3" 1 0 0 0 "" 0 ""
+Count=5
 [Aliases]
 A0=_ "C:\Users\lei\Desktop\IAR\GT20L16P1Y.c" ""
 Count=1

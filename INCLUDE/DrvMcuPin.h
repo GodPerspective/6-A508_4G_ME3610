@@ -222,6 +222,7 @@ void LED_Init(void);
 void Set_GreenLed(IO_ONOFF state);
 void Set_RedLed(IO_ONOFF state);
 void set_power_off(IO_ONOFF state);
+void set_C_Reset(IO_ONOFF state);//软件开关-接中兴模块P0WER_ON
 /******************************************************************************
 ;--------2-TIM3:DELAY hardware macro define
 ******************************************************************************/

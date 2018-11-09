@@ -18,77 +18,39 @@ void Task_login_progress(void)
   switch(TaskDrvobj.login_step)
   {
   case 0:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-0");
     if(AtCmdDrvobj.Msg.Bits.bCommunicationTest==1)//开启上报回复
     {
-      //ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)ATCOMM_POCID, strlen((char const*)ATCOMM_POCID));
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxHardwareid, strlen((char const*)cTxHardwareid));
-      //ApiAtCmd_WritCommand(ATCOMM_ATE1,0,0);//出货前将此处屏蔽，解决poc识别TX指令造成干扰
+      ApiAtCmd_WritCommand(ATCOMM_ATE1,0,0);//出货前将此处屏蔽，解决poc识别TX指令造成干扰
+      ApiAtCmd_WritCommand(ATCOMM_CPIN,0,0);//查询SIM卡状态
       TaskDrvobj.login_step=1;
     }
     break;
   case 1:
     //api_lcd_pwr_on_hint(14,2,GBK,"-1");
-    
     if(AtCmdDrvobj.Msg.Bits.bSimCardIn==1)//已插卡
     {
       VOICE_Play(ABELL);
-      ApiAtCmd_WritCommand(ATCOMM_DIALMODE,0,0);//设置为手动拨号
-      ApiAtCmd_WritCommand(ATCOMM_CGDCONT_SET,0,0);//设置APN
-      ApiAtCmd_WritCommand(ATCOMM_CGDCONT_READ,0,0);//读取设置APN
+      ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
+      ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);//查询网络注册状态
       TaskDrvobj.login_step=2;
     }
     break;
   case 2:
     //api_lcd_pwr_on_hint(14,2,GBK,"-2");
-    if(AtCmdDrvobj.Msg.Bits.bCGDCONT==1)
+    if(AtCmdDrvobj.network_reg.creg==1||AtCmdDrvobj.network_reg.creg==5)//注册上网络
     {
-      ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认自动模式开机
-      Delay_100ms(5);
-      ApiAtCmd_WritCommand(ATCOMM_POWERUP,0,0);//开机准备搜网
+      ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
+      ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
+      ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
+      ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
+      ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
+      VOICE_Play(LoggingIn);
+      DISPLAY_Show(d_LoggingIn);
       TaskDrvobj.login_step=3;
     }
     break;
-  case 3:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-3");
-    if(AtCmdDrvobj.network_reg.creg==1||AtCmdDrvobj.network_reg.cereg==1||AtCmdDrvobj.network_reg.cereg==5
-     ||AtCmdDrvobj.network_reg.cgreg==1||AtCmdDrvobj.network_reg.cgreg==5)
-    {
-      ApiAtCmd_WritCommand(ATCOMM_CGACT,0,0);//PDP上下文激活
-      TaskDrvobj.login_step=4;
-    }
-    break;
-  case 4:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-4");
-    if(AtCmdDrvobj.ZGIPDNS==2)//收到ZGIPDNS后开始发送指令
-    {
-      AtCmdDrvobj.ZGIPDNS=0;
-      ApiAtCmd_WritCommand(ATCOMM_ZGACT1,0,0);//PDP上下文激活
-      TaskDrvobj.login_step=5;
-    }
-    break;
-  case 5:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-5");
-    if(AtCmdDrvobj.ZCONSTAT==2)//收到ZCONSTAT:1,1后表示网络链路成功，可以上网了
-    {
-      AtCmdDrvobj.ZCONSTAT=0;
-      TaskDrvobj.login_step=6;
-    }
-    break;
-  case 6:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-6");
-    break;
-  case 7:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-7");
-    ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
-    ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
-    ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
-    VOICE_Play(LoggingIn);
-    DISPLAY_Show(d_LoggingIn);
-    TaskDrvobj.login_step=8;
-    break;
   default:
-    //api_lcd_pwr_on_hint(14,2,GBK,"-8");
+    //api_lcd_pwr_on_hint(14,2,GBK,"-7");
     break;
   }
 }
@@ -234,20 +196,35 @@ void Task_normal_progress(void)
   }
 /********控制功放喇叭*************************************/
 #if 1
-if(ApiPocCmd_ReceivedVoicePlayStates()==TRUE)
+if(ApiAtCmd_bZTTSStates()==1)
 {
   AUDIO_IOAFPOW(ON);
 }
 else
 {
-  if(poc_receive_sos_statas()==TRUE)
+  if(ApiPocCmd_ReceivedVoicePlayStates()==TRUE)
   {
-     AUDIO_IOAFPOW(ON);
+    AUDIO_IOAFPOW(ON);
   }
   else
   {
-#if 1 //MCU Tone音
-        if(AtCmdDrvobj.voice_tone_play==TRUE)//本地播放tone音
+    if(poc_receive_sos_statas()==TRUE)
+    {
+       AUDIO_IOAFPOW(ON);
+    }
+    else
+    {
+  #if 0 //MCU Tone音
+          if(AtCmdDrvobj.voice_tone_play==TRUE)//本地播放tone音
+          {
+            AUDIO_IOAFPOW(ON);
+          }
+          else
+          {
+            AUDIO_IOAFPOW(OFF);
+          }
+  #else //模块Tone音
+        if(ApiPocCmd_ToneStateIntermediate()==TRUE)
         {
           AUDIO_IOAFPOW(ON);
         }
@@ -255,21 +232,12 @@ else
         {
           AUDIO_IOAFPOW(OFF);
         }
-#else //模块Tone音
-      if(ApiPocCmd_ToneState()==TRUE)
-      {
-        AUDIO_IOAFPOW(ON);
-      }
-      else
-      {
-        AUDIO_IOAFPOW(OFF);
-      }
-#endif
+  #endif
+    }
   }
-}
 #endif
 }
-
+}
 void Task_low_battery_progress(void)
 {
   VOICE_Play(PowerLowPleaseCharge);

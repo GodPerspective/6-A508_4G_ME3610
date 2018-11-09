@@ -1,6 +1,8 @@
 #ifndef __APIKEYBOARD_H
 #define __APIKEYBOARD_H
 
+
+
 extern u8 MenuMode_Flag;
 extern u8 BacklightTimeSetCount;
 extern u8 KeylockTimeSetCount;

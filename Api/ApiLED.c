@@ -6,6 +6,19 @@ void ApiLED_PowerOnInitial(void)
 {
   LED_Conut=0;
 }
+#if 0//rssi test
+void LED_IntOutputRenew(void)
+{
+  if(ReadInput_PIN_RSSI!=0)
+  {
+    Set_GreenLed(ON);
+  }
+  else
+  {
+    Set_GreenLed(OFF);
+  }
+}
+#else
 void LED_IntOutputRenew(void)
 {
   if(TaskDrvobj.Id==TASK_LOGIN)
@@ -68,3 +81,4 @@ void LED_IntOutputRenew(void)
     }
   }
 }
+#endif

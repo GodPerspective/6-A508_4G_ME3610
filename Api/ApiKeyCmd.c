@@ -242,19 +242,21 @@ void key_2_3_4_long_press_function_setting(u8 a)
   case 0://无功能
     break;
   case 1://网络切换
+
     switch(network_count)
     {
     case 0:
-      VOICE_Play(set_network_wcdma_only);
-      ApiAtCmd_WritCommand(ATCOMM_ZGACT0,0,0);
-      Delay_100ms(5);
-      ApiAtCmd_WritCommand(ATCOMM_SetNetworkWcdmaOnly,0,0);
+      VOICE_Play(set_network_3G_Auto);
+      ApiAtCmd_WritCommand(ATCOMM_SetNetwork3GAuto,0,0);
       network_count=1;
       break;
     case 1:
+      VOICE_Play(set_network_2G_only);
+      ApiAtCmd_WritCommand(ATCOMM_SetNetwork2GOnly,0,0);
+      network_count=2;
+      break;
+    case 2:
       VOICE_Play(set_network_auto);
-      ApiAtCmd_WritCommand(ATCOMM_ZGACT0,0,0);
-      Delay_100ms(5);
       ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);
       network_count=0;
       break;

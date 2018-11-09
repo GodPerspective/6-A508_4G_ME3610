@@ -59,6 +59,7 @@ typedef struct {
     u8 voice_tone_play_count;
     u8 ready_return_to_default_state_flag_count;
     u8 poc_gps_value_for_display_flag_count;
+    u8 ZPAS_count;
   }Count;
   bool poc_gps_value_for_display_flag2;
   u8 BacklightTimeBuf[1];//
@@ -120,6 +121,8 @@ void DEL_PowerOnInitial(void)//计时函数初始化
   DelDrvObj.Count.voice_tone_play_count=0;
   DelDrvObj.Count.ready_return_to_default_state_flag_count=0;
   DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
+  DelDrvObj.Count.ZPAS_count=0;
+
   DelDrvObj.poc_gps_value_for_display_flag2=FALSE;
   
   //DelDrvObj.BacklightTimeBuf[0]=0;
@@ -398,6 +401,55 @@ static void DEL_100msProcess(void)
         set_keyboard_key_states(m_key_idle);
       }
     }
+/******喇叭控制相关函数************************/
+    if(ApiAtCmd_bZTTSStates_Intermediate()==1)//语音播报喇叭延迟2秒关闭
+    {
+      DelDrvObj.Count.ztts_states_intermediate_count++;
+      if(DelDrvObj.Count.ztts_states_intermediate_count>10*2)
+      {
+        set_ApiAtCmd_bZTTSStates_Intermediate(0);
+        set_ApiAtCmd_bZTTSStates(0);
+        DelDrvObj.Count.ztts_states_intermediate_count = 0;
+      }
+    }
+    else
+    {
+      if(ApiAtCmd_bZTTSStates()==1)
+      {
+        DelDrvObj.Count.ztts_states_count++;
+        if(DelDrvObj.Count.ztts_states_count>10*20)
+        {
+          set_ApiAtCmd_bZTTSStates(0);
+          DelDrvObj.Count.ztts_states_count=0;
+        }
+      }
+    }
+    
+    if(ApiPocCmd_ReceivedVoicePlayStatesIntermediate()==TRUE)//对讲语音
+    {
+      DelDrvObj.Count.ReceivedVoicePlayStatesCount++;  
+      if(DelDrvObj.Count.ReceivedVoicePlayStatesCount>10*1)
+      {
+        ApiPocCmd_ReceivedVoicePlayStatesIntermediateSet(FALSE);
+        ApiPocCmd_ReceivedVoicePlayStatesSet(FALSE);
+        DelDrvObj.Count.ReceivedVoicePlayStatesCount=0;
+      }
+    }
+    
+    if(ApiPocCmd_ToneStateIntermediate()==TRUE)//bb音
+    {
+      DelDrvObj.Count.ToneStateCount++;
+      if(DelDrvObj.Count.ToneStateCount>5)
+      {
+        ApiPocCmd_ToneStateIntermediateSet(FALSE);
+        DelDrvObj.Count.ToneStateCount=0;
+      }
+    }
+    else
+    {
+      DelDrvObj.Count.ToneStateCount=0;
+    }
+/**********************************************/
   }
   return;
 }
@@ -408,21 +460,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
   {
     DelDrvObj.Msg.Bit.b500ms = DEL_IDLE;
     VOICE_1sProcess();
-    /********^MODE:0 播报无服务*********/
-    if(AtCmdDrvobj.mode_param.sys_mode==0x18)//
-    {
-      DelDrvObj.Count.sys_mode_count++;
-      if(DelDrvObj.Count.sys_mode_count>=2*5)
-      {
-        DelDrvObj.Count.sys_mode_count=0;
-        //VOICE_Play(No_service);
-        //DISPLAY_Show(d_no_service);
-      }
-    }
-    else
-    {
-      DelDrvObj.Count.sys_mode_count=0;
-    }
+/********^MODE:0 播报无服务*********/
 /*********开机检测SIM卡*************/
     if(AtCmdDrvobj.Msg.Bits.bNoSimCard==1)
     {
@@ -438,28 +476,29 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       DelDrvObj.Count.nosimcard_count=0;
     }
-/*****处于登录Step1，隔5s发一次at+ZICCID?**********/
+/*****处于登录Step1，隔5s发一次AT+CPIN?**********/
     if(TaskDrvobj.login_step==1)
     {
       DelDrvObj.Count.get_ccid_count++;
       if(DelDrvObj.Count.get_ccid_count>2*5)
       {
         DelDrvObj.Count.get_ccid_count=0;
-        ApiAtCmd_WritCommand(ATCOMM_ZICCID,0,0);
+        ApiAtCmd_WritCommand(ATCOMM_CPIN,0,0);
       }
     }
     else
     {
       DelDrvObj.Count.get_ccid_count=0;
     }
-/*****处于登录step2状态，隔5s发一次at+cgdcont?**********/
+/*****处于登录step2状态，隔5s发一次AT+CREG?**********/
     if(TaskDrvobj.login_step==2)
     {
       DelDrvObj.Count.get_cgdcont_count++;
       if(DelDrvObj.Count.get_cgdcont_count>2*5)
       {
         DelDrvObj.Count.get_cgdcont_count=0;
-        ApiAtCmd_WritCommand(ATCOMM_CGDCONT_READ,0,0);
+        ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);
+        ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
       }
     }
     else
@@ -471,7 +510,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
        &&AtCmdDrvobj.Msg.Bits.bNoSimCard==0
        &&TaskDrvobj.login_step<=2)
     {
-      api_lcd_pwr_on_hint(0,2,GBK,"��ʼ��...      ");
+      DISPLAY_Show(d_init);
     }
 /*********卡异常*****************/
     if(AtCmdDrvobj.ZLTENOCELL==1)
@@ -488,7 +527,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       ApiAtCmd_WritCommand(ATCOMM_CSQ,0, 0);
       if(MenuMode_Flag==0)
       {
-        NetworkModeIcons();
         HDRCSQSignalIcons();
       }
       if(TaskDrvobj.Id==TASK_LOGIN&&TaskDrvobj.login_step>2&&TaskDrvobj.login_step<=6)//������������
@@ -496,6 +534,15 @@ static void DEL_500msProcess(void)			//delay 500ms process server
         VOICE_Play(NetworkSearching);
         DISPLAY_Show(d_NetworkSearching);
       }
+    }
+    
+/*****定时发送AT+ZPAS?获取当前网络类型*************/
+    NetworkModeIcons(FALSE);//实时刷新当前网络类型，查询到新的类型则刷新一次
+    DelDrvObj.Count.ZPAS_count++;
+    if(DelDrvObj.Count.ZPAS_count>=2*10)
+    {
+      DelDrvObj.Count.ZPAS_count=0;
+      ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
     }
 /******网络注册异常处理********/
     switch(AtCmdDrvobj.network_reg.creg)
@@ -651,7 +698,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       
       if(DelDrvObj.Count.poc_status_count>2*2*60)
       {
-        api_lcd_pwr_on_hint(0,2,GBK,(u8 *)"2-未登录2min重启");
+        DISPLAY_Show(d_2min_end_reset);
         set_power_off(OFF);//关闭模块电源
       }
       if(DelDrvObj.Count.poc_status_count>2*2*60+2*4)
@@ -701,51 +748,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       DelDrvObj.Count.receive_sos_statas_count=0;
     }
     
-/******喇叭控制相关函数************************/
-    if(ApiAtCmd_bZTTSStates_Intermediate()==1)//语音播报喇叭延迟2秒关闭
-    {
-      DelDrvObj.Count.ztts_states_intermediate_count++;
-      if(DelDrvObj.Count.ztts_states_intermediate_count>2*2)
-      {
-        set_ApiAtCmd_bZTTSStates_Intermediate(0);
-        set_ApiAtCmd_bZTTSStates(0);
-        DelDrvObj.Count.ztts_states_intermediate_count = 0;
-      }
-    }
-    else
-    {
-      if(ApiAtCmd_bZTTSStates()==1)
-      {
-        DelDrvObj.Count.ztts_states_count++;
-        if(DelDrvObj.Count.ztts_states_count>2*20)
-        {
-          set_ApiAtCmd_bZTTSStates(0);
-          DelDrvObj.Count.ztts_states_count=0;
-        }
-      }
-    }
-    
-    if(ApiPocCmd_ReceivedVoicePlayStatesIntermediate()==TRUE)//对讲语音
-    {
-      DelDrvObj.Count.ReceivedVoicePlayStatesCount++;  
-      if(DelDrvObj.Count.ReceivedVoicePlayStatesCount>1)
-      {
-        ApiPocCmd_ReceivedVoicePlayStatesIntermediateSet(FALSE);
-        ApiPocCmd_ReceivedVoicePlayStatesSet(FALSE);
-        DelDrvObj.Count.ReceivedVoicePlayStatesCount=0;
-      }
-    }
-    
-    if(ApiPocCmd_ToneStateIntermediate()==TRUE||ApiPocCmd_ToneState()==TRUE)//bb音
-    {
-      DelDrvObj.Count.ToneStateCount++;
-      if(DelDrvObj.Count.ToneStateCount>1)
-      {
-        ApiPocCmd_ToneStateSet(FALSE);
-        ApiPocCmd_ToneStateIntermediateSet(FALSE);
-        DelDrvObj.Count.ToneStateCount=0;
-      }
-    }
+
 /*****获取中：换组时更新组列表后播报及显示当前选中的用户名************/
     if(AtCmdDrvobj.getting_info_flag==TRUE&&PocCmdDrvobj.getting_group_all_done_flag==2)
     {
@@ -933,6 +936,7 @@ static void DEL_10msProcess(void)
     DelDrvObj.Msg.Bit.b10ms = DEL_IDLE;
     
 /**********对讲Tone音本地播放（MZ389新基带版本要求）******************/
+#if 0
     if(AtCmdDrvobj.voice_tone_play==TRUE)
     {
       DelDrvObj.Count.voice_tone_play_count++;
@@ -944,6 +948,7 @@ static void DEL_10msProcess(void)
         AtCmdDrvobj.voice_tone_play=FALSE;
       }
     }
+#endif
 /**********************************************************************/
     DelDrvObj.Count.alarm_count++;
       if(poc_receive_sos_statas()==TRUE)

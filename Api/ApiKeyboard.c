@@ -1,5 +1,8 @@
 //all UTF-8 done
 #include "AllHead.h"
+#if 1//spk test
+u8 spk_test_flag=0;
+#endif
 
 u8 MenuMode_Flag=0;
 u8 BacklightTimeSetCount=1;
@@ -276,6 +279,14 @@ void keyboard_process(void)
           break;
         }
 #else
+        if(spk_test_flag==0)
+        {
+          spk_test_flag=1;
+        }
+        else
+        {
+          spk_test_flag=0;
+        }
        voice_tone();
 #endif
       }
@@ -916,9 +927,11 @@ void return_group_and_clear_flag(void)
 }
 void voice_tone(void)
 {
+  /*
   Set_TIM1_PWM_Frequency(3300);
   Set_TIM1_PWM1_DutyCycle(3300/2);
   AtCmdDrvobj.voice_tone_play=TRUE;
   AUDIO_IOAFPOW(ON);
   BEEP_SetOutput(BEEP_IDPowerOff,ON,0x00,TRUE);
+  */
 }

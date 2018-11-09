@@ -180,7 +180,8 @@ typedef enum{
   PocComm_Key			= 0x10,
   PocComm_Alarm                 = 0x11,
   PocComm_Punch_the_clock_gps   = 0x12,
-  PocComm_Punch_the_clock_nfc   = 0x13
+  PocComm_Punch_the_clock_nfc   = 0x13,
+  PocComm_set_tone_volume       = 0x14
 }PocCommType;
 
 

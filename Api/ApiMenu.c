@@ -91,7 +91,7 @@ void MenuDisplay(MenuDisplayType id)
     get_screen_display_group_name();//选择显示当前群组昵称（群组或单呼临时群组）
     break;
   case Menu_RefreshAllIco:
-    NetworkModeIcons();
+    NetworkModeIcons(TRUE);//强行刷新一次
     HDRCSQSignalIcons();
     if(LockingState_Flag==FALSE)
       api_disp_icoid_output( eICO_IDBANDWIDTHN, TRUE, TRUE);//无锁屏空图标

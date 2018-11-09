@@ -2,6 +2,24 @@
 #define __APIATCMD_H
 
 #include "AllHead.h"
+
+typedef enum{
+  m_NOSERVICE     =0x00,
+  m_GSM           =0x01,
+  m_GPRS          =0x02,
+  m_CDMA          =0x03,
+  m_EDGE          =0x04,
+  m_EVDO          =0x05,
+  m_EHRPD         =0x06,
+  m_UMTS          =0x07,
+  m_HSDPA         =0x08,
+  m_HSUPA         =0x09,
+  m_HSPA          =0x0a,
+  m_HSPAPLUS      =0x0b,
+  m_LTE           =0x0c,
+  m_TDSCDMA       =0x0d,
+  m_LIMITEDSERVICE=0x0e
+}NETWORK_TYPE;
 typedef enum{
   m_CHINESE       = 0x00,
   m_ENGLISH       = 0x01
@@ -33,10 +51,8 @@ typedef struct{
     u8 rssi;//信号强度指示
     u8 act;//信号对应的当前制式
   }csq_param;
-  struct{
-    u8 sys_mode;
-    u8 sys_submode;
-  }mode_param;
+    NETWORK_TYPE network_mode;
+    NETWORK_TYPE network_mode_old;
   struct{
     u8 creg;
     u8 cgreg;
@@ -62,10 +78,10 @@ typedef struct{
 
 typedef enum{
   ATCOMM_ATE1                   = 0x00,
-  ATCOMM_DIALMODE               = 0x01,
+  ATCOMM_CPIN                   = 0x01,
   ATCOMM_CGDCONT_SET            = 0x02,
-  ATCOMM_CGDCONT_READ           = 0x03,
-  ATCOMM_POWERUP                = 0x04,
+  ATCOMM_CREG                    = 0x03,
+  ATCOMM_ZPAS                    = 0x04,
   ATCOMM_CGACT                  = 0x05,
   ATCOMM_ZGACT1                  = 0x06,
   ATCOMM_CSQ                    = 0x07,
@@ -74,8 +90,8 @@ typedef enum{
   ATCOMM_POWEROFF               = 0x0A,
   ATCOMM_Test                   = 0x0B,
   ATCOMM_SetNetworkAuto         = 0x0C,
-  ATCOMM_SetNetworkWcdmaOnly    = 0x0D,
-  ATCOMM_SetNetworkGsmOnly      = 0x0E,
+  ATCOMM_SetNetwork3GAuto       = 0x0D,
+  ATCOMM_SetNetwork2GOnly       = 0x0E,
   ATCOMM_ZGACT0                 = 0x0F,
   ATCOMM_ZICCID                 = 0x10,
   ATCOMM_POCID                  = 0x11
@@ -92,7 +108,7 @@ extern u16   ApiAtCmd_bZTTSStates_Intermediate(void);
 extern void set_ApiAtCmd_bZTTSStates_Intermediate(u16 a);
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
-extern void NetworkModeIcons(void);
+extern void NetworkModeIcons(bool fresh);
 extern void HDRCSQSignalIcons(void);
 extern void ApiAtCmd_100msRenew(void);
 extern void ApiCaretCmd_10msRenew(void);
