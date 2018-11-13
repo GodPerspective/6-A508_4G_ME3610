@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-946004046
+Checksum=-1367821214
 [CodeCoverage]
 Enabled=_ 0
 [CallStack]
@@ -111,10 +111,8 @@ LogFile=_ ""
 [Breakpoints]
 Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiDisplay.c}.876.3" 0 0 0 0 "" 0 ""
 Bp1=_ "STD_CODE" "{$PROJ_DIR$\..\Drv\DrvGT20L16S1Y.c}.342.1" 0 0 0 0 "" 0 ""
-Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiDelay.c}.743.9" 1 0 0 0 "" 0 ""
-Bp3=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiKeyCmd.c}.272.5" 1 0 0 0 "" 0 ""
-Bp4=_ "STD_CODE" "{$PROJ_DIR$\..\User\Task.c}.257.3" 1 0 0 0 "" 0 ""
-Count=5
+Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\Api\ApiKeyCmd.c}.272.5" 1 0 0 0 "" 0 ""
+Count=3
 [Aliases]
 A0=_ "C:\Users\lei\Desktop\IAR\GT20L16P1Y.c" ""
 Count=1

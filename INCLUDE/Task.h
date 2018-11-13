@@ -31,7 +31,7 @@ extern void Task_login_progress(void);
 extern void Task_normal_progress(void);
 extern void Task_low_battery_progress(void);
 extern void Task_PowerOff(void);
-
+extern void login_step_3(void);
 typedef enum{
   Key3_OptionZero       =       0x00,
   Key3_OptionOne        =       0x01,
@@ -65,7 +65,7 @@ TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_WriteFreq(void);
 TASKAPI void Task_RunNormalOperation(void);
 TASKAPI void TASK_RunLoBattery(void);
-TASKAPI u8 PersonCallIco_Flag;//¸ù¾ÝÏÔÊ¾×éºô¸öºôÍ¼±êÅÐ¶Ï×´Ì¬
+TASKAPI u8 PersonCallIco_Flag;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ð¶ï¿½×´Ì¬
 TASKAPI u8 TaskStartDeleteDelay1;
 TASKAPI u8 TaskStartDeleteDelay2;
 TASKAPI u8 TaskStartDeleteDelay3;

@@ -39,13 +39,7 @@ void Task_login_progress(void)
     //api_lcd_pwr_on_hint(14,2,GBK,"-2");
     if(AtCmdDrvobj.network_reg.creg==1||AtCmdDrvobj.network_reg.creg==5)//注册上网络
     {
-      ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
-      ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
-      ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
-      ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
-      ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
-      VOICE_Play(LoggingIn);
-      DISPLAY_Show(d_LoggingIn);
+      login_step_3();
       TaskDrvobj.login_step=3;
     }
     break;
@@ -261,4 +255,15 @@ void Task_PowerOff(void)
   {
     
   }
+}
+
+void login_step_3(void)
+{
+      ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
+      ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
+      ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
+      ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
+      ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
+      VOICE_Play(LoggingIn);
+      DISPLAY_Show(d_LoggingIn);
 }

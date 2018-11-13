@@ -60,6 +60,7 @@ typedef struct {
     u8 ready_return_to_default_state_flag_count;
     u8 poc_gps_value_for_display_flag_count;
     u8 ZPAS_count;
+    u8 login_count;
   }Count;
   bool poc_gps_value_for_display_flag2;
   u8 BacklightTimeBuf[1];//
@@ -122,7 +123,7 @@ void DEL_PowerOnInitial(void)//计时函数初始化
   DelDrvObj.Count.ready_return_to_default_state_flag_count=0;
   DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
   DelDrvObj.Count.ZPAS_count=0;
-
+  DelDrvObj.Count.login_count=0;
   DelDrvObj.poc_gps_value_for_display_flag2=FALSE;
   
   //DelDrvObj.BacklightTimeBuf[0]=0;
@@ -505,6 +506,20 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     {
       DelDrvObj.Count.get_cgdcont_count=0;
     }
+/******处于step3状态，隔15s发一次登录请求*******************/
+    if(TaskDrvobj.login_step==3)
+    {
+      DelDrvObj.Count.login_count++;
+      if(DelDrvObj.Count.login_count>2*15)
+      {
+        login_step_3();
+        DelDrvObj.Count.login_count=0;
+      }
+    }
+    else
+    {
+      DelDrvObj.Count.login_count=0;
+    }
 /**********显示初始化*************/
     if(TaskDrvobj.Id==TASK_LOGIN
        &&AtCmdDrvobj.Msg.Bits.bNoSimCard==0
@@ -529,7 +544,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         HDRCSQSignalIcons();
       }
-      if(TaskDrvobj.Id==TASK_LOGIN&&TaskDrvobj.login_step>2&&TaskDrvobj.login_step<=6)//������������
+      if(TaskDrvobj.Id==TASK_LOGIN&&TaskDrvobj.login_step<3)//������������
       {
         VOICE_Play(NetworkSearching);
         DISPLAY_Show(d_NetworkSearching);
