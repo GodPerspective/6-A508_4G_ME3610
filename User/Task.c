@@ -20,7 +20,7 @@ void Task_login_progress(void)
   case 0:
     if(AtCmdDrvobj.Msg.Bits.bCommunicationTest==1)//开启上报回复
     {
-      ApiAtCmd_WritCommand(ATCOMM_ATE1,0,0);//出货前将此处屏蔽，解决poc识别TX指令造成干扰
+      //ApiAtCmd_WritCommand(ATCOMM_ATE1,0,0);//出货前将此处屏蔽，解决poc识别TX指令造成干扰
       ApiAtCmd_WritCommand(ATCOMM_CPIN,0,0);//查询SIM卡状态
       TaskDrvobj.login_step=1;
     }
@@ -30,6 +30,8 @@ void Task_login_progress(void)
     if(AtCmdDrvobj.Msg.Bits.bSimCardIn==1)//已插卡
     {
       VOICE_Play(ABELL);
+      DEL_SetTimer(0,200);
+      while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
       ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);//查询网络注册状态
       TaskDrvobj.login_step=2;

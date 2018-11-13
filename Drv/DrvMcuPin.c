@@ -100,16 +100,9 @@ void AUDIO_IOAFPOW(IO_ONOFF OnOff)
     break;
   case OFF:
 #if 0//test
-    if(spk_test_flag==0)
-    {
-      GPIO_WriteHigh(GPIO_Noise_Mute, GPIO_PIN_Noise_Mute);
-    }
-    else
-    {
-      GPIO_WriteLow(GPIO_Noise_Mute, GPIO_PIN_Noise_Mute);
-    }
+    GPIO_WriteHigh(GPIO_Noise_Mute, GPIO_PIN_Noise_Mute);
 #else
-        GPIO_WriteLow(GPIO_Noise_Mute, GPIO_PIN_Noise_Mute);
+    GPIO_WriteLow(GPIO_Noise_Mute, GPIO_PIN_Noise_Mute);
 #endif
     break;
   default:break; 

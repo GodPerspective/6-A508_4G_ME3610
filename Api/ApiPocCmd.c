@@ -19,7 +19,7 @@ const u8 *ucPunch_the_clock_gps       = "31000001";//定位打卡
 const u8 *ucPunch_the_clock_nfc       = "31000000";//NFC打卡
 const u8 *ucSetToneVolume             = "2500000200";
 PocCmdDrv PocCmdDrvobj;
-static bool no_online_user(void);
+
 
 void ApiPocCmd_PowerOnInitial(void)
 {
@@ -28,7 +28,7 @@ void ApiPocCmd_PowerOnInitial(void)
   memset(PocCmdDrvobj.NetState.LoginInfo.Buf,0,sizeof(PocCmdDrvobj.NetState.LoginInfo.Buf));
 
   PocCmdDrvobj.States.current_working_status = m_group_mode;
-  PocCmdDrvobj.States.PocStatus = OffLine;
+  PocCmdDrvobj.States.PocStatus = InitStatus;
   PocCmdDrvobj.States.GroupStats = LeaveGroup;
   PocCmdDrvobj.States.KeyPttState = 0;
   PocCmdDrvobj.States.ReceivedVoicePlayStates = FALSE;
@@ -420,11 +420,11 @@ void ApiPocCmd_10msRenew(void)
       {
         PocCmdDrvobj.all_user_num=COML_AscToHex(pBuf+10,0x02);
         PocCmdDrvobj.getting_user_all_done_flag=3;
-        if(no_online_user()==TRUE)
+ /*       if(no_online_user()==TRUE)
         {
           VOICE_Play(NoOnlineUser);//无在线成员
           return_group_and_clear_flag();//清空所有标志位返回默认群组状态
-        }
+        }*/
       }
       else if(PocCmdDrvobj.getting_user_all_done_flag==1)
       {
@@ -437,7 +437,6 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {
-        
       }
 
       break;
@@ -1274,7 +1273,7 @@ u16 GetAllOnlineUserNum(void)
 }
 
 //判断是否群组成员在线
-static bool no_online_user(void)
+bool no_online_user(void)
 {
   if(PocCmdDrvobj.all_user_num!=0)
   {

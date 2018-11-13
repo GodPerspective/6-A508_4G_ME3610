@@ -183,6 +183,7 @@ void LowVoltageDetection(void)
         get_screen_display_group_name();////选择显示当前群组昵称（群组或单呼临时群组）
         KeyDownUpChoose_GroupOrUser_Flag=0;
         api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//图标：空-非选状态
+        api_disp_all_screen_refresh();// 全屏统一刷新
         KeyUpDownCount=0;
         TaskDrvobj.battery_states=BATTERY_HEALTH;
       }

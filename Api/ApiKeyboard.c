@@ -1,8 +1,5 @@
 //all UTF-8 done
 #include "AllHead.h"
-#if 1//spk test
-u8 spk_test_flag=0;
-#endif
 
 u8 MenuMode_Flag=0;
 u8 BacklightTimeSetCount=1;
@@ -278,16 +275,6 @@ void keyboard_process(void)
           network_count=0;
           break;
         }
-#else
-        if(spk_test_flag==0)
-        {
-          spk_test_flag=1;
-        }
-        else
-        {
-          spk_test_flag=0;
-        }
-       voice_tone();
 #endif
       }
       set_keyboard_menu_states(m_key_idle);
@@ -464,6 +451,7 @@ void keyboard_process(void)
             ApiPocCmd_WritCommand(PocComm_EnterGroup,0,0);
           }
           return_group_and_clear_flag();//清空所有标志位返回默认群组状态
+          AUDIO_IOAFPOW(OFF);  
         }
       }
       set_keyboard_cancel_states(m_key_idle);
@@ -899,13 +887,13 @@ void return_group_and_clear_flag(void)
   api_lcd_pwr_on_hint(0,2,UNICODE,GetNowWorkingGroupNameForDisplay());//显示当前群组昵称
   KeyDownUpChoose_GroupOrUser_Flag=0;
   api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//S选择对应空图标
+  api_disp_all_screen_refresh();// 全屏统一刷新
   KeyUpDownCount=0;
   PocCmdDrvobj.getting_info_flag=KEYNONE;//清除获取群组或用户名标志位
   KEYCMD_key_2_short_states_set(m_group_mode);
   #if 1//报警时按返回键退出
   set_poc_receive_sos_statas(FALSE);
   ApiPocCmd_ToneStateSet(FALSE);
-  AUDIO_IOAFPOW(OFF);  
   BEEP_SetOutput(BEEP_IDPowerOff,OFF,0x00,TRUE);
   #endif
   

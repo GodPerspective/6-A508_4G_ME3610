@@ -20,7 +20,7 @@
 ----------------------------------------------------------------------------*/
 #include "AllHead.h"
 
-
+u16 test_num=0;
 /*-----------------------------------------------------------------------------
  Macro Define (macro definitions used in this file internally)
 -----------------------------------------------------------------------------*/
@@ -130,6 +130,7 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 			r = TRUE;
 			DataAddr = iCode - 0x20;
 		}
+                test_num=iCode;
                 WW_GetData(iCode,cBuf);
 		break;
 	default:

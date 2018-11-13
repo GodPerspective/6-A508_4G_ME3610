@@ -57,6 +57,7 @@ void key_process(void)
         KeyDownUpChoose_GroupOrUser_Flag=2;
         KeyCmdDrvObj.status.key_2_short_states=m_personal_mode;
         api_disp_icoid_output( eICO_IDLOCKED, TRUE, TRUE);//S选择图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
         break;
       case m_personal_mode://组呼模式
         KeyCmdDrvObj.status.PersonalKeyMode=FALSE;
@@ -68,6 +69,7 @@ void key_process(void)
         }//
         return_group_and_clear_flag();//清空所有标志位返回默认群组状态
         api_disp_icoid_output( eICO_IDMESSAGEOff, TRUE, TRUE);//S选择图标
+        api_disp_all_screen_refresh();// 全屏统一刷新
         KeyDownUpChoose_GroupOrUser_Flag=1;
         break;
       }

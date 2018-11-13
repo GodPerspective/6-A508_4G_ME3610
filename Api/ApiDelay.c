@@ -61,6 +61,7 @@ typedef struct {
     u8 poc_gps_value_for_display_flag_count;
     u8 ZPAS_count;
     u8 login_count;
+    u8 tts_no_online_user_count;
   }Count;
   bool poc_gps_value_for_display_flag2;
   u8 BacklightTimeBuf[1];//
@@ -124,6 +125,8 @@ void DEL_PowerOnInitial(void)//计时函数初始化
   DelDrvObj.Count.poc_gps_value_for_display_flag_count=0;
   DelDrvObj.Count.ZPAS_count=0;
   DelDrvObj.Count.login_count=0;
+  DelDrvObj.Count.tts_no_online_user_count=0;
+  
   DelDrvObj.poc_gps_value_for_display_flag2=FALSE;
   
   //DelDrvObj.BacklightTimeBuf[0]=0;
@@ -523,7 +526,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
 /**********显示初始化*************/
     if(TaskDrvobj.Id==TASK_LOGIN
        &&AtCmdDrvobj.Msg.Bits.bNoSimCard==0
-       &&TaskDrvobj.login_step<=2)
+       &&TaskDrvobj.login_step<2)
     {
       DISPLAY_Show(d_init);
     }
@@ -536,6 +539,14 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     }
 /*********定时5s发一次[AT+CSQ?]*************************************************/
     DelDrvObj.Count.csq_count++;
+    if(DelDrvObj.Count.csq_count==1)
+    {
+      if(TaskDrvobj.Id==TASK_LOGIN&&TaskDrvobj.login_step==2)//������������
+      {
+        VOICE_Play(NetworkSearching);
+        DISPLAY_Show(d_NetworkSearching);
+      }
+    }
     if(DelDrvObj.Count.csq_count>=2*9)
     {
       DelDrvObj.Count.csq_count=0;
@@ -543,11 +554,6 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       if(MenuMode_Flag==0)
       {
         HDRCSQSignalIcons();
-      }
-      if(TaskDrvobj.Id==TASK_LOGIN&&TaskDrvobj.login_step<3)//������������
-      {
-        VOICE_Play(NetworkSearching);
-        DISPLAY_Show(d_NetworkSearching);
       }
     }
     
@@ -702,12 +708,12 @@ static void DEL_500msProcess(void)			//delay 500ms process server
     }
     
 /*******收到离线指令，屏幕提示离线状态*******/
-    if(TaskDrvobj.Id==TASK_NORMAL&&poccmd_states_poc_status()==OffLine)
+    if(poccmd_states_poc_status()==OffLine)
     {
       DISPLAY_Show(d_status_offline);
     }
 /*******处于未登录成功状态过2分钟未登陆重启*******/
-    if(poccmd_states_poc_status()!=LandSuccess)
+    if(poccmd_states_poc_status()!=LandSuccess&&AtCmdDrvobj.Msg.Bits.bNoSimCard!=1)
     {
       DelDrvObj.Count.poc_status_count++;
       
@@ -740,6 +746,22 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         DelDrvObj.Count.poc_first_enter_into_group_flag_count=4;
       }
+    }
+/******按单呼键若无在线成员则播报无在线成员****************/
+    if(PocCmdDrvobj.getting_user_all_done_flag==3&&no_online_user()==TRUE)
+    {
+      DelDrvObj.Count.tts_no_online_user_count++;
+      if(DelDrvObj.Count.tts_no_online_user_count>1)
+      {
+        DelDrvObj.Count.tts_no_online_user_count=0;
+        PocCmdDrvobj.getting_user_all_done_flag=0;
+        VOICE_Play(NoOnlineUser);//无在线成员
+        return_group_and_clear_flag();//清空所有标志位返回默认群组状态
+      }
+    }
+    else
+    {
+      DelDrvObj.Count.tts_no_online_user_count=0;
     }
 /********收到0x8a则进入一键报警********/
     if(poc_receive_sos_statas()==TRUE)

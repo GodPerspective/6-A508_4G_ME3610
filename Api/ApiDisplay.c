@@ -188,11 +188,11 @@ const u8 *dp_no_service         = "No service      ";//30
 const u8 *dp_getting_info       = "getting info... ";//31
 const u8 *dp_not_in_groups      = "Not in groups   ";//32
 const u8 *dp_punch_the_clock    = "Checking in...  ";//33
-const u8 *dp_punch_the_clock_fail="Checking in fail";//34
+const u8 *dp_punch_the_clock_fail="Checkin fail    ";//34
 const u8 *dp_gps_not_located    = "Gps not located ";//35
 const u8 *dp_receive_zready     = "receive ZREADY  ";//36
 const u8 *dp_init               = "Initializing... ";//37
-const u8 *dp_2min_end_reset     = "2min not login  ";//38
+const u8 *dp_2min_end_reset     = "LOGINING 2 mins";//38
 #endif //#ifdef CHINESE
 
 u8 DisDataBit[64]  = {0};

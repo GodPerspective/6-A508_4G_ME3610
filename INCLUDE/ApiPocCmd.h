@@ -11,10 +11,11 @@
 #define APIPOC_User_Num                 5
 
 typedef enum{
-  OffLine       =0x00,
-  Landing       =0x01,
-  LandSuccess   =0x02,
-  Logout        =0x03
+  InitStatus    =0x00,
+  OffLine       =0x01,
+  Landing       =0x02,
+  LandSuccess   =0x03,
+  Logout        =0x04
 }PocStatesType;
 
 typedef enum{
@@ -216,7 +217,7 @@ extern bool ApiPocCmd_ToneState(void);
 extern void ApiPocCmd_ToneStateSet(bool a);
 
 extern working_status_type get_current_working_status(void);
-
+extern bool no_online_user(void);
 extern PocStatesType poccmd_states_poc_status(void);
 extern bool poc_receive_sos_statas(void);
 extern void set_poc_receive_sos_statas(bool a);

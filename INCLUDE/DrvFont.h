@@ -100,7 +100,7 @@ typedef enum
 	eICO_IDMONITER  = 21,//图标：听筒-听筒模式
 	eICO_IDBANDWIDTHW = 22,//图标：锁屏
 	eICO_IDBANDWIDTHN = 23,//图标：空-无锁屏
-    eICO_IDMESSAGEOff = 24,//图标：空-非选状态
+        eICO_IDMESSAGEOff = 24,//图标：空-非选状态
 	eICO_IDOffStart   = 25,//图标：4G
 	eICO_IDVOXOff     = 26,//图标：E
 	eICO_IDSCANOff    = 27,//图标：H
