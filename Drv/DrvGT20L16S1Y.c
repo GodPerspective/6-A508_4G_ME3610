@@ -131,7 +131,8 @@ bool drv_gt20_data_output(DISP_TYPE cID, u16 iCode, u8 *cBuf)
 			DataAddr = iCode - 0x20;
 		}
                 test_num=iCode;
-                WW_GetData(iCode,cBuf);
+                //WW_GetData(iCode,cBuf);
+                unicode_muti_addr(iCode,cBuf);
 		break;
 	default:
 		break;

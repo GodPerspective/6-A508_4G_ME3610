@@ -191,8 +191,9 @@ const u8 *dp_punch_the_clock    = "Checking in...  ";//33
 const u8 *dp_punch_the_clock_fail="Checkin fail    ";//34
 const u8 *dp_gps_not_located    = "Gps not located ";//35
 const u8 *dp_receive_zready     = "receive ZREADY  ";//36
+
 const u8 *dp_init               = "Initializing... ";//37
-const u8 *dp_2min_end_reset     = "LOGINING 2 mins";//38
+const u8 *dp_2min_end_reset     = "Logining 2 mins ";//38
 #endif //#ifdef CHINESE
 
 u8 DisDataBit[64]  = {0};
@@ -337,7 +338,7 @@ void DISPLAY_Show(DISPLAY_TYPE id)
     case d_init://38
       api_lcd_pwr_on_hint(0,2,GBK,(u8 *)dp_init);
       break;
-    case d_2min_end_reset:39
+    case d_2min_end_reset://39
       api_lcd_pwr_on_hint(0,2,GBK,(u8 *)dp_2min_end_reset);
       break;
     default:

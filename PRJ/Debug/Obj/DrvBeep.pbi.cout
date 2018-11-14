@@ -10,6 +10,8 @@ E:\1-source\6-A508_4G_ME3610\PRJ\..\Lib\inc
 -I
 E:\1-source\6-A508_4G_ME3610\PRJ\..\Suport
 -I
+E:\1-source\6-A508_4G_ME3610\PRJ\..\Drv\DrvGT20L16P1Y\new
+-I
 C:\Program Files\IAR Systems\Embedded Workbench 7.3\stm8\inc
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 7.3\stm8\inc\c
@@ -21,6 +23,8 @@ E:\1-source\6-A508_4G_ME3610\User
 E:\1-source\6-A508_4G_ME3610\Lib\inc
 -I
 E:\1-source\6-A508_4G_ME3610\Suport
+-I
+E:\1-source\6-A508_4G_ME3610\Drv\DrvGT20L16P1Y\new
 -DSTM8S007=1
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff

@@ -28,6 +28,7 @@
 //字库IC
 #include "GT20L16P1Y.h"
 #include "GT20L16P1Y_D.h"//字库补丁
+#include "GT20L16P1Y2.h"//单字符补丁
 
 //打卡解码-UTF8转UNICODE
 #include "UTF8toUNICODE.h"
