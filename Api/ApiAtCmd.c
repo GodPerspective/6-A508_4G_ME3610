@@ -31,17 +31,17 @@ const u8 *cRxZPAS_LTE           ="ZPAS: \"LTE\"";
 const u8 *cRxZPAS_TDSCDMA       ="ZPAS: \"TD-SCDMA\"";
 
 //#else
-const u8 *cTxDIALMODE           ="at+dialmode=0";
+const u8 *cTxDIALMODE            ="at+dialmode=0";
 const u8 *cTxCGDCONT_SET0        ="AT+CGDCONT=1,\"IP\",\"\"";//
 const u8 *cTxCGDCONT_SET1        ="AT+CGDCONT=1,\"IP\",\"3gnet\"";
 const u8 *cTxCGDCONT_SET2        ="AT+CGDCONT=1,\"IP\",\"etisalat.ae\"";//
-const u8 *cTxCGDCONT_SET3       ="AT+CGDCONT=1,\"IP\",\"internet\"";//
+const u8 *cTxCGDCONT_SET3        ="AT+CGDCONT=1,\"IP\",\"internet\"";//
 const u8 *cTxCGDCONT_SET4        ="AT+CGDCONT=1,\"IP\",\"internet.proximus.be\"";//����ʱProximus
-const u8 *cTxCGDCONT_SET5        ="AT+CGDCONT=1,\"IP\",\"\"";//
-const u8 *cTxCGDCONT_SET6        ="AT+CGDCONT=1,\"IP\",\"\"";//
-const u8 *cTxCGDCONT_SET7        ="AT+CGDCONT=1,\"IP\",\"\"";//
-const u8 *cTxCGDCONT_SET8        ="AT+CGDCONT=1,\"IP\",\"\"";//
-const u8 *cTxCGDCONT_SET9       ="AT+CGDCONT=1,\"IP\",\"\"";//
+const u8 *cTxCGDCONT_SET5        ="AT+CGDCONT=1,\"IP\",\"internet.eplus.de\"";//E-plus
+const u8 *cTxCGDCONT_SET6        ="AT+CGDCONT=1,\"IP\",\"surfo2\"";//
+const u8 *cTxCGDCONT_SET7        ="AT+CGDCONT=1,\"IP\",\"internet.t-d1.de\"";//T-Mobile 
+const u8 *cTxCGDCONT_SET8        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
+const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
 const u8 *cTxPOCID                      ="AT^POCID=2";
 const u8 *cTxZICCID                     ="AT+ZICCID?";
 const u8 *cTxCGDCONT_READ               ="at+cgdcont?";
@@ -478,7 +478,7 @@ void ApiAtCmd_10msRenew(void)
       AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
     }
 #endif
-    ucRet = memcmp(pBuf, cRxZTTS0, 6);
+    ucRet = memcmp(pBuf, cRxZTTS0, 7);
     if(ucRet == 0x00)
     {
       AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 1;
@@ -496,7 +496,7 @@ bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
   u8 temp_buf[4];
   bool r = TRUE;
 #if 1 //3630 3610播报本地TTS无其他提示，故在此处设立标志位
-  AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
+  //AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
   AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
 #endif
   DrvMC8332_TxPort_SetValidable(ON);

@@ -416,18 +416,6 @@ static void DEL_100msProcess(void)
         DelDrvObj.Count.ztts_states_intermediate_count = 0;
       }
     }
-    else
-    {
-      if(ApiAtCmd_bZTTSStates()==1)
-      {
-        DelDrvObj.Count.ztts_states_count++;
-        if(DelDrvObj.Count.ztts_states_count>10*20)
-        {
-          set_ApiAtCmd_bZTTSStates(0);
-          DelDrvObj.Count.ztts_states_count=0;
-        }
-      }
-    }
     
     if(ApiPocCmd_ReceivedVoicePlayStatesIntermediate()==TRUE)//对讲语音
     {

@@ -173,7 +173,7 @@ const u8 *dp_backlight          = "Backlight       ";//16
 const u8 *dp_keypad_lock        = "Keypad Lock     ";//17
 const u8 *dp_close              = "Close           ";//18
 const u8 *dp_individual_call    = "Individual Call ";//19
-const u8 *dp_version            = "Version:        ";//20
+const u8 *dp_version            = "A508L_ME3630:   ";//20
 const u8 *dp_press_ok_then_well = "Press OK then # ";//21
 const u8 *dp_status_offline     = "Status:Offline  ";//22
 

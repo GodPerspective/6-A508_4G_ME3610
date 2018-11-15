@@ -32,6 +32,7 @@ void Task_login_progress(void)
       VOICE_Play(ABELL);
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
+      ApiAtCmd_WritCommand(ATCOMM_CGDCONT_SET,0,0);//设置APN
       ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
       ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);//查询网络注册状态
       TaskDrvobj.login_step=2;
