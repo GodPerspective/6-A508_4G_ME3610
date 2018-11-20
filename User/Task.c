@@ -2,6 +2,9 @@
 
 TaskDrv TaskDrvobj;
 const u8 *cTxHardwareid         ="at^hardwareid=2,0";
+const u8 *cTxCLVL            ="AT+CLVL=5";
+const u8 *cTxCMVLC           ="AT+CMVLC=3";
+const u8 *cTxCLVLC           ="AT+CLVLC=3";
 u8 Key_PersonalCalling_Flag;
 
 void Task_Init(void)
@@ -29,6 +32,9 @@ void Task_login_progress(void)
     //api_lcd_pwr_on_hint(14,2,GBK,"-1");
     if(AtCmdDrvobj.Msg.Bits.bSimCardIn==1)//已插卡
     {
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVL, strlen((char const*)cTxCLVL));
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC, strlen((char const*)cTxCMVLC));
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC, strlen((char const*)cTxCLVLC));
       VOICE_Play(ABELL);
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
@@ -193,34 +199,24 @@ void Task_normal_progress(void)
   }
 /********控制功放喇叭*************************************/
 #if 1
-if(ApiAtCmd_bZTTSStates()==1)
-{
-  AUDIO_IOAFPOW(ON);
-}
-else
-{
-  if(ApiPocCmd_ReceivedVoicePlayStates()==TRUE)
+  if(ApiAtCmd_bZTTSStates()==1)//播报本地TTS
   {
     AUDIO_IOAFPOW(ON);
   }
   else
   {
-    if(poc_receive_sos_statas()==TRUE)
+    if(PocCmdDrvobj.States.ReceivedVoicePlayStates==TRUE)//播报系统TTS
     {
-       AUDIO_IOAFPOW(ON);
+      AUDIO_IOAFPOW(ON);
     }
     else
     {
-  #if 0 //MCU Tone音
-          if(AtCmdDrvobj.voice_tone_play==TRUE)//本地播放tone音
-          {
-            AUDIO_IOAFPOW(ON);
-          }
-          else
-          {
-            AUDIO_IOAFPOW(OFF);
-          }
-  #else //模块Tone音
+      if(poc_receive_sos_statas()==TRUE)
+      {
+        AUDIO_IOAFPOW(ON);
+      }
+      else
+      {
         if(ApiPocCmd_ToneStateIntermediate()==TRUE)
         {
           AUDIO_IOAFPOW(ON);
@@ -229,11 +225,41 @@ else
         {
           AUDIO_IOAFPOW(OFF);
         }
-  #endif
+      }
+    }
+  }
+#else
+  if(ApiAtCmd_bZTTSStates()==1)//播报本地TTS
+  {
+    AUDIO_IOAFPOW(ON);
+  }
+  else
+  {
+    if(ApiPocCmd_ReceivedVoicePlayStates()==TRUE)
+    {
+      AUDIO_IOAFPOW(ON);
+    }
+    else
+    {
+      if(poc_receive_sos_statas()==TRUE)
+      {
+        AUDIO_IOAFPOW(ON);
+      }
+      else
+      {
+        if(ApiPocCmd_ToneStateIntermediate()==TRUE)
+        {
+          AUDIO_IOAFPOW(ON);
+        }
+        else
+        {
+          AUDIO_IOAFPOW(OFF);
+        }
+      }
     }
   }
 #endif
-}
+  
 }
 void Task_low_battery_progress(void)
 {

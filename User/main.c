@@ -131,9 +131,11 @@ void main_all_init(void)
   BEEP_Time(100);
   set_C_Reset(ON);
   MCU_LCD_BACKLIGTH(ON);
-  api_disp_icoid_output( eICO_IDBATT5, TRUE, TRUE);//图标：5格电池
-  api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//图标：喇叭-免提模式
+  api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//图标：0格信号
   api_disp_icoid_output( eICO_IDSPEAKEROff, TRUE, TRUE);//图标：X-无信号
+  api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);//图标：0格电池
+  
+  
   //ApiAtCmd_WritCommand(ATCOMM_RESET,(void*)0, 0);
 }
 

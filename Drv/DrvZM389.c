@@ -24,9 +24,9 @@ typedef enum{
   Head_AtPoc            = 0x02,
   Head_Plus             = 0x03,
   Head_PlusPoc          = 0x04,
-  Head_Caret	          = 0x05,
+  Head_Caret	        = 0x05,
   Head_RecevTcp	        = 0x06,
-  Head_CaretSIMST	      = 0x07,
+  Head_CaretSIMST       = 0x07,
   Head_Null             = 0x00
 }HEAD_Type;
 

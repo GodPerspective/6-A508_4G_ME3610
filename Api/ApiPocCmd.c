@@ -834,6 +834,38 @@ void ApiPocCmd_10msRenew(void)
       api_lcd_pwr_on_hint(0,2,UNICODE,GetReceiveMessagesUserNameForDisplay());
       break;
     case 0x8B://通知音频播放状态
+#if 1//
+      ucId = COML_AscToHex(pBuf+4, 0x02);
+      if(ucId==0x02)//播放poc自带tts
+      {
+        PocCmdDrvobj.States.ReceivedVoicePlayStates=TRUE;//喇叭控制
+        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;//解决连续按ptt，第二次喇叭不出声
+        
+        PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedStartTTS;//接收图标/显示呼叫用户名/使用
+      }
+      else if(ucId==0x01)//播放对讲语音
+      {
+        PocCmdDrvobj.States.ReceivedVoicePlayStates=TRUE;//喇叭控制
+        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;//解决连续按ptt，第二次喇叭不出声
+        
+        PocCmdDrvobj.States.ReceivedVoicePlayStatesForLED=TRUE;//指示灯使用
+        PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedStartVoice;//接收图标/显示呼叫用户名/使用
+      }
+      else if(ucId==0x00)//停止播放所有语音
+      {
+        AtCmdDrvobj.Msg.Bits.bZTTSStates=0;//语音播报结束，关闭播放标志位
+        PocCmdDrvobj.States.ReceivedVoicePlayStatesForLED=FALSE;//指示灯使用
+        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=TRUE;//解决连续按ptt，第二次喇叭不出声
+                
+        if(PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedStartVoice||PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedBeingVoice)
+          PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedEndVoice;//喇叭控制/接收图标/显示呼叫用户名/使用
+        else if(PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedStartTTS||PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedBeingTTS)
+          PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedEndTTS;//喇叭控制/接收图标/显示呼叫用户名/使用
+      }
+      else
+      {
+      }
+#else
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId==0x02)//播放tts
       {
@@ -851,7 +883,7 @@ void ApiPocCmd_10msRenew(void)
       }
       else if(ucId==0x00)
       {
-        
+        AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 1;
         PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=TRUE;//喇叭控制使用
         PocCmdDrvobj.States.ReceivedVoicePlayStatesForLED=FALSE;//指示灯使用
         if(PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedStartVoice||PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedBeingVoice)
@@ -861,6 +893,7 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {}
+#endif
       break;
     case 0x8C://通知接收其他终端发来的消息
       break;
@@ -913,7 +946,7 @@ void ApiPocCmd_SetKeyPttState(u8 i)
 {
   PocCmdDrvobj.States.KeyPttState=i;
 }
-
+#if 0
 bool ApiPocCmd_ReceivedVoicePlayStates(void)
 {
   return PocCmdDrvobj.States.ReceivedVoicePlayStates;
@@ -922,6 +955,7 @@ void ApiPocCmd_ReceivedVoicePlayStatesSet(bool a)
 {
   PocCmdDrvobj.States.ReceivedVoicePlayStates=a;
 }
+#endif
 
 ReceivedVoicePlayStatesType ApiPocCmd_ReceivedVoicePlayStatesForDisplay(void)
 {
@@ -931,7 +965,7 @@ void ApiPocCmd_ReceivedVoicePlayStatesForDisplaySet(ReceivedVoicePlayStatesType 
 {
   PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=a;
 }
-
+#if 0
 bool ApiPocCmd_ReceivedVoicePlayStatesIntermediate(void)//中间变量
 {
   return PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate;
@@ -940,6 +974,7 @@ void ApiPocCmd_ReceivedVoicePlayStatesIntermediateSet(bool a)//中间变量
 {
   PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=a;
 }
+#endif
 
 bool ApiPocCmd_ReceivedVoicePlayStatesForLED(void)
 {

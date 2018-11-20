@@ -41,7 +41,7 @@ const u8 *cTxCGDCONT_SET5        ="AT+CGDCONT=1,\"IP\",\"internet.eplus.de\"";//
 const u8 *cTxCGDCONT_SET6        ="AT+CGDCONT=1,\"IP\",\"surfo2\"";//
 const u8 *cTxCGDCONT_SET7        ="AT+CGDCONT=1,\"IP\",\"internet.t-d1.de\"";//T-Mobile 
 const u8 *cTxCGDCONT_SET8        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
-const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
+const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"\"";//Vodafone
 const u8 *cTxPOCID                      ="AT^POCID=2";
 const u8 *cTxZICCID                     ="AT+ZICCID?";
 const u8 *cTxCGDCONT_READ               ="at+cgdcont?";
@@ -471,18 +471,15 @@ void ApiAtCmd_10msRenew(void)
     }
 /*******语音播放喇叭控制标志位*******************/
 #if 0
-    ucRet = memcmp(pBuf, cRxPASTATE1, 9);
-    if(ucRet == 0x00)
-    {
-      AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
-      AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
-    }
-#endif
+
     ucRet = memcmp(pBuf, cRxZTTS0, 7);
     if(ucRet == 0x00)
     {
+      //ApiPocCmd_ReceivedVoicePlayStatesIntermediateSet(FALSE);
+      //ApiPocCmd_ReceivedVoicePlayStatesSet(FALSE);
       AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 1;
     }
+#endif
 /****未插卡CMEERROR**********************/
 
 /****数据业务拨号ZPPPSTATUS*************/
@@ -496,8 +493,8 @@ bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
   u8 temp_buf[4];
   bool r = TRUE;
 #if 1 //3630 3610播报本地TTS无其他提示，故在此处设立标志位
-  //AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
-  AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
+  AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
+  //AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
 #endif
   DrvMC8332_TxPort_SetValidable(ON);
   DrvGD83_UART_TxCommand((u8*)cTxPlayZtts, strlen((char const *)cTxPlayZtts));

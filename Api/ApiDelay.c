@@ -9,16 +9,16 @@
 typedef struct {
   union {
     struct {
-      u16 b1ms    : 1;
-      u16 b10ms 	: 1;
+      u16 b1ms          : 1;
+      u16 b10ms         : 1;
       u16 b100ms	: 1;
       u16 b500ms	: 1;
-      u16 b1S		  : 1;
-      u16 bTimeSet: 1;
+      u16 b1S           : 1;
+      u16 bTimeSet      : 1;
       u16 bTime0	: 1;
       u16 bTime1	: 1;
       u16 b500Alternate : 1;
-      u16		      : 7;
+      u16               : 7;
     }Bit;
     u16 Byte;
   }Msg;
@@ -85,7 +85,7 @@ static void DEL_TimerRenew(void);
 void DEL_PowerOnInitial(void)//计时函数初始化
 {
 
-  DelDrvObj.Msg.Byte 	= 0x00;
+  DelDrvObj.Msg.Byte 	  = 0x00;
   DelDrvObj.c10msLen    = DEL10MSLEN;
   DelDrvObj.c100msLen   = 0x0A;
   DelDrvObj.c500msLen   = 0x05;
@@ -406,16 +406,49 @@ static void DEL_100msProcess(void)
       }
     }
 /******喇叭控制相关函数************************/
-    if(ApiAtCmd_bZTTSStates_Intermediate()==1)//语音播报喇叭延迟2秒关闭
+#if 1
+    if(PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate==TRUE)
     {
       DelDrvObj.Count.ztts_states_intermediate_count++;
       if(DelDrvObj.Count.ztts_states_intermediate_count>10*2)
       {
-        set_ApiAtCmd_bZTTSStates_Intermediate(0);
-        set_ApiAtCmd_bZTTSStates(0);
-        DelDrvObj.Count.ztts_states_intermediate_count = 0;
+        DelDrvObj.Count.ztts_states_intermediate_count=0;
+        PocCmdDrvobj.States.ReceivedVoicePlayStates=FALSE;
+        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;
       }
     }
+    else
+    {
+      DelDrvObj.Count.ztts_states_intermediate_count=0;
+    }
+#else
+    if(ApiAtCmd_bZTTSStates()==1)//当处于TTS播报状态
+    {
+      if(ApiAtCmd_bZTTSStates_Intermediate()==1)//TTS语音播报喇叭延迟2秒关闭
+      {
+        DelDrvObj.Count.ztts_states_intermediate_count++;
+        if(DelDrvObj.Count.ztts_states_intermediate_count>10*2)
+        {
+          set_ApiAtCmd_bZTTSStates_Intermediate(0);
+          set_ApiAtCmd_bZTTSStates(0);
+          DelDrvObj.Count.ztts_states_intermediate_count = 0;
+        }
+      }
+      else
+      {
+        DelDrvObj.Count.ztts_states_intermediate_count=0;
+        if(ApiAtCmd_bZTTSStates()==1)
+        {
+          DelDrvObj.Count.ztts_states_count++;
+          if(DelDrvObj.Count.ztts_states_count>2*20)
+          {
+            set_ApiAtCmd_bZTTSStates(0);
+            DelDrvObj.Count.ztts_states_count=0;
+          }
+        }
+      }
+    }
+
     
     if(ApiPocCmd_ReceivedVoicePlayStatesIntermediate()==TRUE)//对讲语音
     {
@@ -427,7 +460,7 @@ static void DEL_100msProcess(void)
         DelDrvObj.Count.ReceivedVoicePlayStatesCount=0;
       }
     }
-    
+#endif
     if(ApiPocCmd_ToneStateIntermediate()==TRUE)//bb音
     {
       DelDrvObj.Count.ToneStateCount++;
