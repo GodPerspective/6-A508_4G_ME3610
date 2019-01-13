@@ -102,10 +102,6 @@ extern AtCmdDrv AtCmdDrvobj;
 extern u8 KeyDownUpChoose_GroupOrUser_Flag;
 
 extern void ApiAtCmd_PowerOnInitial(void);
-extern u16   ApiAtCmd_bZTTSStates(void);
-extern void set_ApiAtCmd_bZTTSStates(u16 a);
-extern u16   ApiAtCmd_bZTTSStates_Intermediate(void);
-extern void set_ApiAtCmd_bZTTSStates_Intermediate(u16 a);
 extern bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len);
 extern bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len);
 extern void NetworkModeIcons(bool fresh);

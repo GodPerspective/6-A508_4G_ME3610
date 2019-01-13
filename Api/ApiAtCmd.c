@@ -41,7 +41,15 @@ const u8 *cTxCGDCONT_SET5        ="AT+CGDCONT=1,\"IP\",\"internet.eplus.de\"";//
 const u8 *cTxCGDCONT_SET6        ="AT+CGDCONT=1,\"IP\",\"surfo2\"";//
 const u8 *cTxCGDCONT_SET7        ="AT+CGDCONT=1,\"IP\",\"internet.t-d1.de\"";//T-Mobile 
 const u8 *cTxCGDCONT_SET8        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
-const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"\"";//Vodafone
+const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"airtelgprs.com\"";    //印度AirTel
+const u8 *cTxCGDCONT_SET10        ="AT+CGDCONT=1,\"IP\",\"bplgprs.com\"";      //印度BPL
+const u8 *cTxCGDCONT_SET11        ="AT+CGDCONT=1,\"IP\",\"Cellular internet\"";//印度Idea
+const u8 *cTxCGDCONT_SET12        ="AT+CGDCONT=1,\"IP\",\"gprsmtnlmum\"";      //印度MTNL Mumbai 
+const u8 *cTxCGDCONT_SET13        ="AT+CGDCONT=1,\"IP\",\"portalnmms\"";       //印度Orange 
+const u8 *cTxCGDCONT_SET14        ="AT+CGDCONT=1,\"IP\",\"aycell\"";           //土耳其Aycell
+const u8 *cTxCGDCONT_SET15        ="AT+CGDCONT=1,\"IP\",\"telsim\"";           //土耳其telsim
+const u8 *cTxCGDCONT_SET16        ="AT+CGDCONT=1,\"IP\",\"Turkcell\"";         //土耳其Turkcell
+
 const u8 *cTxPOCID                      ="AT^POCID=2";
 const u8 *cTxZICCID                     ="AT+ZICCID?";
 const u8 *cTxCGDCONT_READ               ="at+cgdcont?";
@@ -202,6 +210,27 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
       break;
     case 9:
       DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET9, strlen((char const*)cTxCGDCONT_SET9));
+      break;
+    case 10:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET10, strlen((char const*)cTxCGDCONT_SET10));
+      break;
+    case 11:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET11, strlen((char const*)cTxCGDCONT_SET11));
+      break;
+    case 12:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET12, strlen((char const*)cTxCGDCONT_SET12));
+      break;
+    case 13:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET13, strlen((char const*)cTxCGDCONT_SET13));
+      break;
+    case 14:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET14, strlen((char const*)cTxCGDCONT_SET14));
+      break;
+    case 15:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET15, strlen((char const*)cTxCGDCONT_SET15));
+      break;
+    case 16:
+      DrvGD83_UART_TxCommand((u8*)cTxCGDCONT_SET16, strlen((char const*)cTxCGDCONT_SET16));
       break;
     default:
       break;
@@ -470,14 +499,13 @@ void ApiAtCmd_10msRenew(void)
       AtCmdDrvobj.ZLTENOCELL=1;
     }
 /*******语音播放喇叭控制标志位*******************/
-#if 0
+#if 1
 
     ucRet = memcmp(pBuf, cRxZTTS0, 7);
     if(ucRet == 0x00)
     {
-      //ApiPocCmd_ReceivedVoicePlayStatesIntermediateSet(FALSE);
-      //ApiPocCmd_ReceivedVoicePlayStatesSet(FALSE);
-      AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 1;
+      //AtCmdDrvobj.Msg.Bits.bZTTSStates=0;//语音播报结束，关闭播放标志位
+      AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate=1;//语音播报结束，延迟2s关闭播放
     }
 #endif
 /****未插卡CMEERROR**********************/
@@ -494,7 +522,7 @@ bool ApiAtCmd_PlayVoice(AtVoiceType id, u8 *buf, u8 len)
   bool r = TRUE;
 #if 1 //3630 3610播报本地TTS无其他提示，故在此处设立标志位
   AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
-  //AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
+  AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
 #endif
   DrvMC8332_TxPort_SetValidable(ON);
   DrvGD83_UART_TxCommand((u8*)cTxPlayZtts, strlen((char const *)cTxPlayZtts));
@@ -584,23 +612,23 @@ void HDRCSQSignalIcons(void)
   {
     api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//图标：0格信号
   }
-  else if(AtCmdDrvobj.csq_param.rssi>=15&&AtCmdDrvobj.csq_param.rssi<19)
+  else if(AtCmdDrvobj.csq_param.rssi>=15&&AtCmdDrvobj.csq_param.rssi<17)
   {
     api_disp_icoid_output( eICO_IDRXFULL, TRUE, TRUE);//图标：1格信号
   }
-  else if(AtCmdDrvobj.csq_param.rssi>=19&&AtCmdDrvobj.csq_param.rssi<23)
+  else if(AtCmdDrvobj.csq_param.rssi>=17&&AtCmdDrvobj.csq_param.rssi<19)
   {
     api_disp_icoid_output( eICO_IDRXNULL, TRUE, TRUE);//图标：2格信号
   }
-  else if(AtCmdDrvobj.csq_param.rssi>=23&&AtCmdDrvobj.csq_param.rssi<27)
+  else if(AtCmdDrvobj.csq_param.rssi>=19&&AtCmdDrvobj.csq_param.rssi<21)
   {
     api_disp_icoid_output( eICO_IDSCAN, TRUE, TRUE);//图标：3格信号
   }
-  else if(AtCmdDrvobj.csq_param.rssi>=27&&AtCmdDrvobj.csq_param.rssi<31)
+  else if(AtCmdDrvobj.csq_param.rssi>=21&&AtCmdDrvobj.csq_param.rssi<23)
   {
     api_disp_icoid_output( eICO_IDSCANPA, TRUE, TRUE);//图标：4格信号
   }
-  else if(AtCmdDrvobj.csq_param.rssi>=31)//5��
+  else if(AtCmdDrvobj.csq_param.rssi>=23)//5��
   {
     api_disp_icoid_output( eICO_IDSPEAKER, TRUE, TRUE);//图标：5格信号
   }
@@ -655,20 +683,4 @@ void  CHAR_TO_DIV_CHAR(u8 * pPrimary, u8 * pDestination, u8 Len)
 			pDestination[j + 1] = buf + 0x57;
 		}
 	}
-}
-u16 ApiAtCmd_bZTTSStates(void)
-{
-  return AtCmdDrvobj.Msg.Bits.bZTTSStates;
-}
-void set_ApiAtCmd_bZTTSStates(u16 a)
-{
-  AtCmdDrvobj.Msg.Bits.bZTTSStates = a;
-}
-u16 ApiAtCmd_bZTTSStates_Intermediate(void)
-{
-  return AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate;
-}
-void set_ApiAtCmd_bZTTSStates_Intermediate(u16 a)
-{
-  AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = a;
 }

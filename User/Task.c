@@ -2,9 +2,9 @@
 
 TaskDrv TaskDrvobj;
 const u8 *cTxHardwareid         ="at^hardwareid=2,0";
-const u8 *cTxCLVL            ="AT+CLVL=5";
-const u8 *cTxCMVLC           ="AT+CMVLC=3";
-const u8 *cTxCLVLC           ="AT+CLVLC=3";
+const u8 *cTxCLVL            ="AT+CLVL=5";//5
+const u8 *cTxCMVLC           ="AT+CMVLC=3";//3
+const u8 *cTxCLVLC           ="AT+CLVLC=4";//3
 u8 Key_PersonalCalling_Flag;
 
 void Task_Init(void)
@@ -199,7 +199,7 @@ void Task_normal_progress(void)
   }
 /********控制功放喇叭*************************************/
 #if 1
-  if(ApiAtCmd_bZTTSStates()==1)//播报本地TTS
+  if(AtCmdDrvobj.Msg.Bits.bZTTSStates==1)//播报本地TTS
   {
     AUDIO_IOAFPOW(ON);
   }
@@ -288,6 +288,10 @@ void Task_PowerOff(void)
 
 void login_step_3(void)
 {
+  
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVL, strlen((char const*)cTxCLVL));
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC, strlen((char const*)cTxCMVLC));
+      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC, strlen((char const*)cTxCLVLC));
       ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
       ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
       ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用

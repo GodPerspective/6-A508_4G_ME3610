@@ -838,24 +838,23 @@ void ApiPocCmd_10msRenew(void)
       ucId = COML_AscToHex(pBuf+4, 0x02);
       if(ucId==0x02)//播放poc自带tts
       {
-        PocCmdDrvobj.States.ReceivedVoicePlayStates=TRUE;//喇叭控制
-        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;//解决连续按ptt，第二次喇叭不出声
-        
+        AtCmdDrvobj.Msg.Bits.bZTTSStates=1;
+        AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate = 0;//播报新语音时将中间变量清零，等待收到ztts0重新打开标志位
         PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedStartTTS;//接收图标/显示呼叫用户名/使用
       }
       else if(ucId==0x01)//播放对讲语音
       {
         PocCmdDrvobj.States.ReceivedVoicePlayStates=TRUE;//喇叭控制
-        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;//解决连续按ptt，第二次喇叭不出声
+        //PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;//解决连续按ptt，第二次喇叭不出声
         
         PocCmdDrvobj.States.ReceivedVoicePlayStatesForLED=TRUE;//指示灯使用
         PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedStartVoice;//接收图标/显示呼叫用户名/使用
       }
       else if(ucId==0x00)//停止播放所有语音
       {
-        AtCmdDrvobj.Msg.Bits.bZTTSStates=0;//语音播报结束，关闭播放标志位
+        PocCmdDrvobj.States.ReceivedVoicePlayStates=FALSE;//喇叭控制
+        //PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=TRUE;//解决连续按ptt，第二次喇叭不出声
         PocCmdDrvobj.States.ReceivedVoicePlayStatesForLED=FALSE;//指示灯使用
-        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=TRUE;//解决连续按ptt，第二次喇叭不出声
                 
         if(PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedStartVoice||PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay==ReceivedBeingVoice)
           PocCmdDrvobj.States.ReceivedVoicePlayStatesForDisplay=ReceivedEndVoice;//喇叭控制/接收图标/显示呼叫用户名/使用

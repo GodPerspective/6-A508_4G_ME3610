@@ -407,14 +407,14 @@ static void DEL_100msProcess(void)
     }
 /******喇叭控制相关函数************************/
 #if 1
-    if(PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate==TRUE)
+    if(AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate==1)
     {
       DelDrvObj.Count.ztts_states_intermediate_count++;
-      if(DelDrvObj.Count.ztts_states_intermediate_count>10*2)
+      if(DelDrvObj.Count.ztts_states_intermediate_count>10*3)
       {
         DelDrvObj.Count.ztts_states_intermediate_count=0;
-        PocCmdDrvobj.States.ReceivedVoicePlayStates=FALSE;
-        PocCmdDrvobj.States.ReceivedVoicePlayStates_Intermediate=FALSE;
+        AtCmdDrvobj.Msg.Bits.bZTTSStates=0;
+        AtCmdDrvobj.Msg.Bits.bZTTSStates_Intermediate=0;
       }
     }
     else
