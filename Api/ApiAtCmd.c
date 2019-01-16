@@ -1,6 +1,21 @@
 //all UTF-8 done
 #include "AllHead.h"
 
+const u8 *cTxCLVL            ="AT+CLVL=5";//5 此指令测试设置无效
+const u8 *cTxCLVLC0           ="AT+CLVLC=0";//3
+const u8 *cTxCLVLC1           ="AT+CLVLC=1";//3
+const u8 *cTxCLVLC2           ="AT+CLVLC=2";//3
+const u8 *cTxCLVLC3           ="AT+CLVLC=3";//3
+const u8 *cTxCLVLC4           ="AT+CLVLC=4";//3
+const u8 *cTxCLVLC5           ="AT+CLVLC=5";//3
+const u8 *cTxCMVLC0           ="AT+CMVLC=0";//3
+const u8 *cTxCMVLC1           ="AT+CMVLC=1";//3
+const u8 *cTxCMVLC2           ="AT+CMVLC=2";//3
+const u8 *cTxCMVLC3           ="AT+CMVLC=3";//3
+const u8 *cTxCMVLC4           ="AT+CMVLC=4";//3
+const u8 *cTxCMVLC5           ="AT+CMVLC=5";//3
+
+
 #if 1//ME3630/3610
 const u8 *cTxATE1               ="ATE1";
 const u8 *cTxCSQ                ="AT+CSQ";
@@ -43,7 +58,7 @@ const u8 *cTxCGDCONT_SET7        ="AT+CGDCONT=1,\"IP\",\"internet.t-d1.de\"";//T
 const u8 *cTxCGDCONT_SET8        ="AT+CGDCONT=1,\"IP\",\"web.vodafone.de\"";//Vodafone
 const u8 *cTxCGDCONT_SET9        ="AT+CGDCONT=1,\"IP\",\"airtelgprs.com\"";    //印度AirTel
 const u8 *cTxCGDCONT_SET10        ="AT+CGDCONT=1,\"IP\",\"bplgprs.com\"";      //印度BPL
-const u8 *cTxCGDCONT_SET11        ="AT+CGDCONT=1,\"IP\",\"Cellular internet\"";//印度Idea
+const u8 *cTxCGDCONT_SET11        ="AT+CGDCONT=1,\"IP\",\"cellular internet\"";//印度Idea
 const u8 *cTxCGDCONT_SET12        ="AT+CGDCONT=1,\"IP\",\"gprsmtnlmum\"";      //印度MTNL Mumbai 
 const u8 *cTxCGDCONT_SET13        ="AT+CGDCONT=1,\"IP\",\"portalnmms\"";       //印度Orange 
 const u8 *cTxCGDCONT_SET14        ="AT+CGDCONT=1,\"IP\",\"aycell\"";           //土耳其Aycell
@@ -60,9 +75,11 @@ const u8 *cTxZGACT0                     ="at+zgact=0,1";
 const u8 *cTxPlayZtts                   ="AT+ZTTS=";
 const u8 *cTxRESET                      ="at+cfun=1,1";
 const u8 *cTxPOWEROFF                   ="at+cfun=0,0";
-const u8 *cTxSetNetworkAuto             ="AT+ZSNTE=0";
-const u8 *cTxSetNetwork3GAuto           ="AT+ZSNTE=1";
-const u8 *cTxSetNetwork2GOnly           ="AT+ZSNTE=2";
+const u8 *cTxSetNetwork4GAuto           ="AT+ZSNTE=0";//优先4G
+const u8 *cTxSetNetwork3GAuto           ="AT+ZSNTE=1";//优先3G
+const u8 *cTxSetNetwork2GOnly           ="AT+ZSNTE=2";//仅限2G
+const u8 *cTxSetNetwork3GOnly           ="AT+ZSNTE=3";//仅限3G(实测中电信卡设为仅限3G，会登不上，因为机器会先处于2G模式再转换为3G模式)
+const u8 *cTxSetNetwork4GOnly           ="AT+ZSNTE=4";//仅限4G
 const u8 *cRxZICCID             ="ZICCID: ";
 
 
@@ -100,6 +117,9 @@ void ApiAtCmd_PowerOnInitial(void)
   AtCmdDrvobj.key2_long_value=0;
   AtCmdDrvobj.key3_long_value=0;
   AtCmdDrvobj.key4_long_value=0;
+  AtCmdDrvobj.boot_network_mode=0;
+  AtCmdDrvobj.clvlc_spk_gain=0;
+  AtCmdDrvobj.cmvlc_mic_gain=0;
   AtCmdDrvobj.Key3Option=Key3_OptionZero;
   AtCmdDrvobj.key_top_option=REMOTE_AND_LOCAL_ALARM;
   AtCmdDrvobj.punch_the_clock_gps_key_press_flag=FALSE;
@@ -110,10 +130,13 @@ void ApiAtCmd_PowerOnInitial(void)
   //FILE_Read(0x23A,1,&(AtCmdDrvobj.language_value));//FILE_Read
   FILE_Read(598,1,&(AtCmdDrvobj.Key3_PlayValue));
   FILE_Read(602,1,&AtCmdDrvobj.key_top_value);//顶部键的报警类型
-  //FILE_Read(590,20,AtCmdDrvobj.testbuf);
+  //FILE_Read(0x247,20,AtCmdDrvobj.testbuf);
   FILE_Read(599,1,&(AtCmdDrvobj.key2_long_value));//侧键1长键
   FILE_Read(597,1,&(AtCmdDrvobj.key3_long_value));//侧键2长键
   FILE_Read(601,1,&(AtCmdDrvobj.key4_long_value));//侧键2长键
+  FILE_Read(0x248,1,&(AtCmdDrvobj.boot_network_mode));//开机默认网络模式
+  FILE_Read(0x249,1,&(AtCmdDrvobj.clvlc_spk_gain));//spk音量增益
+  FILE_Read(0x24A,1,&(AtCmdDrvobj.cmvlc_mic_gain));//mic咪头增益
   /*switch(AtCmdDrvobj.language_value)
   {
   case 0:
@@ -268,14 +291,20 @@ bool ApiAtCmd_WritCommand(AtCommType id, u8 *buf, u16 len)
   case ATCOMM_ZGACT0:
     DrvGD83_UART_TxCommand((u8*)cTxZGACT0, strlen((char const*)cTxZGACT0));
     break;
-  case ATCOMM_SetNetworkAuto:
-    DrvGD83_UART_TxCommand((u8*)cTxSetNetworkAuto, strlen((char const*)cTxSetNetworkAuto));
+  case ATCOMM_SetNetwork4GAuto:
+    DrvGD83_UART_TxCommand((u8*)cTxSetNetwork4GAuto, strlen((char const*)cTxSetNetwork4GAuto));
     break;
   case ATCOMM_SetNetwork3GAuto:
     DrvGD83_UART_TxCommand((u8*)cTxSetNetwork3GAuto, strlen((char const*)cTxSetNetwork3GAuto));
     break;
   case ATCOMM_SetNetwork2GOnly:
     DrvGD83_UART_TxCommand((u8*)cTxSetNetwork2GOnly, strlen((char const*)cTxSetNetwork2GOnly));
+    break;
+  case ATCOMM_SetNetwork3GOnly:
+    DrvGD83_UART_TxCommand((u8*)cTxSetNetwork3GOnly, strlen((char const*)cTxSetNetwork3GOnly));
+    break;
+  case ATCOMM_SetNetwork4GOnly:
+    DrvGD83_UART_TxCommand((u8*)cTxSetNetwork4GOnly, strlen((char const*)cTxSetNetwork4GOnly));
     break;
   case ATCOMM_ZICCID:
     DrvGD83_UART_TxCommand((u8*)cTxZICCID, strlen((char const*)cTxZICCID));
@@ -636,6 +665,86 @@ void HDRCSQSignalIcons(void)
   api_disp_all_screen_refresh();// 全屏统一刷新
 }
 
+//根据写频软件参数boot_network_mode选择默认开机的网络模式（4G/3G/2G）
+void boot_network_mode_selection(void)
+{
+  switch(AtCmdDrvobj.boot_network_mode)
+  {
+  case 0:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork4GAuto,0,0);//默认设置为网络模式自动选择，优先4G
+    break;
+  case 1:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork3GAuto,0,0);//默认设置为网络模式自动选择，优先3G
+    break;
+  case 2:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork2GOnly,0,0);//默认设置为网络模式仅限2G
+    break;
+  case 3:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork3GOnly,0,0);//默认设置为网络模式仅限3G
+    break;
+  case 4:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork4GOnly,0,0);//默认设置为网络模式仅限4G
+    break;
+  default:
+    ApiAtCmd_WritCommand(ATCOMM_SetNetwork4GAuto,0,0);//默认设置为网络模式自动选择，优先4G
+    break;
+  }
+}
+
+//根据写频软件参数选择默认开机的spk和mic增益
+void cmvlc_and_clvlc_spk_mic_gain_selection(void)
+{
+  ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVL, strlen((char const*)cTxCLVL));
+      
+  switch(AtCmdDrvobj.clvlc_spk_gain)
+  {
+  case 0:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC0, strlen((char const*)cTxCLVLC0));
+    break;
+  case 1:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC1, strlen((char const*)cTxCLVLC1));
+    break;
+  case 2:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC2, strlen((char const*)cTxCLVLC2));
+    break;
+  case 3:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC3, strlen((char const*)cTxCLVLC3));
+    break;
+  case 4:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC4, strlen((char const*)cTxCLVLC4));
+    break;
+  case 5:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC5, strlen((char const*)cTxCLVLC5));
+    break;
+  default:
+    break;
+  }
+  
+  switch(AtCmdDrvobj.cmvlc_mic_gain)
+  {
+  case 0:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC0, strlen((char const*)cTxCMVLC0));
+    break;
+  case 1:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC1, strlen((char const*)cTxCMVLC1));
+    break;
+  case 2:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC2, strlen((char const*)cTxCMVLC2));
+    break;
+  case 3:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC3, strlen((char const*)cTxCMVLC3));
+    break;
+  case 4:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC4, strlen((char const*)cTxCMVLC4));
+    break;
+  case 5:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC5, strlen((char const*)cTxCMVLC5));
+    break;
+  default:
+    break;
+  }
+}
+
 u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
 {
 	u8 i;
@@ -684,3 +793,4 @@ void  CHAR_TO_DIV_CHAR(u8 * pPrimary, u8 * pDestination, u8 Len)
 		}
 	}
 }
+

@@ -258,8 +258,13 @@ void key_2_3_4_long_press_function_setting(u8 a)
       network_count=2;
       break;
     case 2:
+      VOICE_Play(set_network_4G_only);
+      ApiAtCmd_WritCommand(ATCOMM_SetNetwork4GOnly,0,0);
+      network_count=3;
+      break;
+    case 3:
       VOICE_Play(set_network_auto);
-      ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);
+      ApiAtCmd_WritCommand(ATCOMM_SetNetwork4GAuto,0,0);
       network_count=0;
       break;
     default:

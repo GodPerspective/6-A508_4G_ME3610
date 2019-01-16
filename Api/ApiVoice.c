@@ -31,6 +31,7 @@ const u8 *ucNo_service                  = "e0650d67a152";//无服务
 const u8 *ucSet_network_auto            = "517fdc7ebe8b6e7f3a4eea81a852216a0f5f";//网络设置为自动模式
 const u8 *ucSet_network_3G_auto         = "517fdc7ebe8b6e7f3a4e184F4851094ec45b";//网络设置为优先3G
 const u8 *ucSet_network_2G_only         = "517fdc7ebe8b6e7f3a4ec54e50968c4ec45b";//网络设置为仅限2G
+const u8 *ucSet_network_4G_only         = "517fdc7ebe8b6e7f3a4ec54e5096db56c45b";//网络设置为仅限4G
 const u8 *ucpunch_the_clock             = "636b285753626153";//正在打卡
 const u8 *ucpunch_the_clock_fail        = "536261533159258d";//打卡失败
 const u8 *ucgps_not_located             = "4700500053002a679a5b4d4f0cff536261533159258d";//gps未定位，打卡失败
@@ -201,6 +202,9 @@ void VOICE_Play(VOICEPLAY_TYPE id)
       break;
     case set_network_2G_only:
       VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucSet_network_2G_only,strlen((char const*)ucSet_network_2G_only));
+      break;
+    case set_network_4G_only:
+      VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucSet_network_4G_only,strlen((char const*)ucSet_network_4G_only));
       break;
     case punch_the_clock://正在打卡
       VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucpunch_the_clock,strlen((char const*)ucpunch_the_clock));

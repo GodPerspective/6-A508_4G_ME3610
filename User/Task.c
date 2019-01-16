@@ -2,9 +2,7 @@
 
 TaskDrv TaskDrvobj;
 const u8 *cTxHardwareid         ="at^hardwareid=2,0";
-const u8 *cTxCLVL            ="AT+CLVL=5";//5
-const u8 *cTxCMVLC           ="AT+CMVLC=3";//3
-const u8 *cTxCLVLC           ="AT+CLVLC=4";//3
+
 u8 Key_PersonalCalling_Flag;
 
 void Task_Init(void)
@@ -32,14 +30,12 @@ void Task_login_progress(void)
     //api_lcd_pwr_on_hint(14,2,GBK,"-1");
     if(AtCmdDrvobj.Msg.Bits.bSimCardIn==1)//已插卡
     {
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVL, strlen((char const*)cTxCLVL));
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC, strlen((char const*)cTxCMVLC));
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC, strlen((char const*)cTxCLVLC));
+      cmvlc_and_clvlc_spk_mic_gain_selection();
       VOICE_Play(ABELL);
       DEL_SetTimer(0,200);
       while(1){if(DEL_GetTimer(0) == TRUE) {break;}}
       ApiAtCmd_WritCommand(ATCOMM_CGDCONT_SET,0,0);//设置APN
-      ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
+      boot_network_mode_selection();//根据写频软件参数boot_network_mode选择默认开机的网络模式（4G/3G/2G）
       ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);//查询网络注册状态
       TaskDrvobj.login_step=2;
     }
@@ -288,10 +284,7 @@ void Task_PowerOff(void)
 
 void login_step_3(void)
 {
-  
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVL, strlen((char const*)cTxCLVL));
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCMVLC, strlen((char const*)cTxCMVLC));
-      ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxCLVLC, strlen((char const*)cTxCLVLC));
+      cmvlc_and_clvlc_spk_mic_gain_selection();
       ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
       ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
       ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用

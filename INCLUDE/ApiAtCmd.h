@@ -67,6 +67,9 @@ typedef struct{
   u8 key2_long_value;
   u8 key3_long_value;
   u8 key4_long_value;
+  u8 boot_network_mode;
+  u8 clvlc_spk_gain;
+  u8 cmvlc_mic_gain;
   //u8 testbuf[20];
   Key3_OptionType Key3Option;
   KEY_TOP_TYPE key_top_option;
@@ -89,12 +92,14 @@ typedef enum{
   ATCOMM_RESET                  = 0x09,
   ATCOMM_POWEROFF               = 0x0A,
   ATCOMM_Test                   = 0x0B,
-  ATCOMM_SetNetworkAuto         = 0x0C,
+  ATCOMM_SetNetwork4GAuto       = 0x0C,
   ATCOMM_SetNetwork3GAuto       = 0x0D,
   ATCOMM_SetNetwork2GOnly       = 0x0E,
-  ATCOMM_ZGACT0                 = 0x0F,
-  ATCOMM_ZICCID                 = 0x10,
-  ATCOMM_POCID                  = 0x11
+  ATCOMM_SetNetwork3GOnly       = 0x0F,
+  ATCOMM_SetNetwork4GOnly       = 0x10,
+  ATCOMM_ZGACT0                 = 0x11,
+  ATCOMM_ZICCID                 = 0x12,
+  ATCOMM_POCID                  = 0x13
 }AtCommType;
 
 
@@ -109,6 +114,8 @@ extern void HDRCSQSignalIcons(void);
 extern void ApiAtCmd_100msRenew(void);
 extern void ApiCaretCmd_10msRenew(void);
 extern void ApiAtCmd_10msRenew(void);
+extern void boot_network_mode_selection(void);
+extern void cmvlc_and_clvlc_spk_mic_gain_selection(void);
 
 extern u32  CHAR_TO_Digital(u8 * pBuf, u8 Len);
 extern void  Digital_TO_CHAR(u8 * pBuf, u32 data, u8 Len);

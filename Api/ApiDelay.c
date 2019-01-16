@@ -523,7 +523,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       {
         DelDrvObj.Count.get_cgdcont_count=0;
         ApiAtCmd_WritCommand(ATCOMM_CREG,0,0);
-        ApiAtCmd_WritCommand(ATCOMM_SetNetworkAuto,0,0);//默认设置为网络模式自动选择
+        boot_network_mode_selection();//根据写频软件参数boot_network_mode选择默认开机的网络模式（4G/3G/2G）
       }
     }
     else
