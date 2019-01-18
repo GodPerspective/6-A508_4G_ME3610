@@ -67,6 +67,7 @@ const u8 *ucNo_service                  = "4e006f0020007300650072007600690063006
 const u8 *ucSet_network_auto            = "6e006500740077006f0072006b0020006d006f006400650020006100750074006f006d006100740069006300";//network mode automatic
 const u8 *ucSet_network_3G_auto         = "4e006500740077006f0072006b002000730065007400200074006f0020007000720069006f0072006900740079002000330020004700";//Network set to priority 3G
 const u8 *ucSet_network_2G_only         = "4e006500740077006f0072006b002000730065007400200074006f00200032002000670020006f006e006c007900";//Network set to 2g only 
+const u8 *ucSet_network_4G_only         = "4e006500740077006f0072006b002000730065007400200074006f00200034002000670020006f006e006c007900";//Network set to 2g only 
 const u8 *ucpunch_the_clock             = "43006800650063006b0069006e006700200069006e00";//正在打卡
 const u8 *ucpunch_the_clock_fail        = "43006800650063006b0069006e0020004600610069006c0065006400";//打卡失败
 const u8 *ucgps_not_located             = "47007000730020006e006f00740020006c006f00630061007400650064002c002000700075006e006300680020006600610069006c00750072006500";//gps未定位，打卡失败
@@ -314,6 +315,9 @@ void VOICE_Play(VOICEPLAY_TYPE id)
       break;
     case set_network_2G_only:
       VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucSet_network_2G_only,strlen((char const*)ucSet_network_2G_only));
+      break;
+    case set_network_4G_only:
+      VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucSet_network_4G_only,strlen((char const*)ucSet_network_4G_only));
       break;
     case punch_the_clock:
       VOICE_SetOutput(ATVOICE_FreePlay,(u8*)ucpunch_the_clock,strlen((char const*)ucpunch_the_clock));
