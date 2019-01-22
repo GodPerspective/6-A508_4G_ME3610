@@ -769,7 +769,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       }
     }
 /******按单呼键若无在线成员则播报无在线成员****************/
-    if(PocCmdDrvobj.getting_user_all_done_flag==3&&no_online_user()==TRUE)
+    if(PocCmdDrvobj.getting_user_all_done_flag==2&&no_online_user()==TRUE)
     {
       DelDrvObj.Count.tts_no_online_user_count++;
       if(DelDrvObj.Count.tts_no_online_user_count>1)
@@ -816,7 +816,7 @@ static void DEL_500msProcess(void)			//delay 500ms process server
       AtCmdDrvobj.getting_info_flag=FALSE;
     }
 /*****获取中：换组时更新组列表后播报及显示当前选中的用户名************/
-    if(AtCmdDrvobj.getting_info_flag==TRUE&&PocCmdDrvobj.getting_user_all_done_flag==3)
+    if(AtCmdDrvobj.getting_info_flag==TRUE&&PocCmdDrvobj.getting_user_all_done_flag==2)
     {
       PocCmdDrvobj.getting_user_all_done_flag=0;
       changing_user_voice_and_display(PersonalCallingNum);

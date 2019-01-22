@@ -32,6 +32,7 @@ extern void Task_normal_progress(void);
 extern void Task_low_battery_progress(void);
 extern void Task_PowerOff(void);
 extern void login_step_3(void);
+extern void spk_control(void);
 typedef enum{
   Key3_OptionZero       =       0x00,
   Key3_OptionOne        =       0x01,

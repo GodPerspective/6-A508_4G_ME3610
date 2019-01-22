@@ -52,6 +52,8 @@ void Task_login_progress(void)
     //api_lcd_pwr_on_hint(14,2,GBK,"-7");
     break;
   }
+/********控制功放喇叭*************************************/
+  spk_control();
 }
 
 
@@ -194,68 +196,8 @@ void Task_normal_progress(void)
     break;
   }
 /********控制功放喇叭*************************************/
-#if 1
-  if(AtCmdDrvobj.Msg.Bits.bZTTSStates==1)//播报本地TTS
-  {
-    AUDIO_IOAFPOW(ON);
-  }
-  else
-  {
-    if(PocCmdDrvobj.States.ReceivedVoicePlayStates==TRUE)//播报系统TTS
-    {
-      AUDIO_IOAFPOW(ON);
-    }
-    else
-    {
-      if(poc_receive_sos_statas()==TRUE)
-      {
-        AUDIO_IOAFPOW(ON);
-      }
-      else
-      {
-        if(ApiPocCmd_ToneStateIntermediate()==TRUE)
-        {
-          AUDIO_IOAFPOW(ON);
-        }
-        else
-        {
-          AUDIO_IOAFPOW(OFF);
-        }
-      }
-    }
-  }
-#else
-  if(ApiAtCmd_bZTTSStates()==1)//播报本地TTS
-  {
-    AUDIO_IOAFPOW(ON);
-  }
-  else
-  {
-    if(ApiPocCmd_ReceivedVoicePlayStates()==TRUE)
-    {
-      AUDIO_IOAFPOW(ON);
-    }
-    else
-    {
-      if(poc_receive_sos_statas()==TRUE)
-      {
-        AUDIO_IOAFPOW(ON);
-      }
-      else
-      {
-        if(ApiPocCmd_ToneStateIntermediate()==TRUE)
-        {
-          AUDIO_IOAFPOW(ON);
-        }
-        else
-        {
-          AUDIO_IOAFPOW(OFF);
-        }
-      }
-    }
-  }
-#endif
-  
+  spk_control();
+
 }
 void Task_low_battery_progress(void)
 {
@@ -292,4 +234,38 @@ void login_step_3(void)
       ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
       VOICE_Play(LoggingIn);
       DISPLAY_Show(d_LoggingIn);
+}
+
+void spk_control(void)
+{
+/********控制功放喇叭*************************************/
+  if(AtCmdDrvobj.Msg.Bits.bZTTSStates==1)//播报本地TTS
+  {
+    AUDIO_IOAFPOW(ON);
+  }
+  else
+  {
+    if(PocCmdDrvobj.States.ReceivedVoicePlayStates==TRUE)//播报系统TTS
+    {
+      AUDIO_IOAFPOW(ON);
+    }
+    else
+    {
+      if(poc_receive_sos_statas()==TRUE)
+      {
+        AUDIO_IOAFPOW(ON);
+      }
+      else
+      {
+        if(ApiPocCmd_ToneStateIntermediate()==TRUE)
+        {
+          AUDIO_IOAFPOW(ON);
+        }
+        else
+        {
+          AUDIO_IOAFPOW(OFF);
+        }
+      }
+    }
+  }
 }

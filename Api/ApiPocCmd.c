@@ -416,15 +416,16 @@ void ApiPocCmd_10msRenew(void)
 
       break;
     case 0x0e://获取组成员信息
-      if(PocCmdDrvobj.getting_user_all_done_flag==2)//解决发0e时进入的问题
+      PocCmdDrvobj.all_user_num=COML_AscToHex(pBuf+10,0x02);
+      PocCmdDrvobj.getting_user_all_done_flag=2;
+      /*if(PocCmdDrvobj.getting_user_all_done_flag==2)//解决发0e时进入的问题
       {
-        PocCmdDrvobj.all_user_num=COML_AscToHex(pBuf+10,0x02);
         PocCmdDrvobj.getting_user_all_done_flag=3;
- /*       if(no_online_user()==TRUE)
+     if(no_online_user()==TRUE)
         {
           VOICE_Play(NoOnlineUser);//无在线成员
           return_group_and_clear_flag();//清空所有标志位返回默认群组状态
-        }*/
+        }
       }
       else if(PocCmdDrvobj.getting_user_all_done_flag==1)
       {
@@ -437,7 +438,7 @@ void ApiPocCmd_10msRenew(void)
       }
       else
       {
-      }
+      }*/
 
       break;
     case 0x11://上报经纬度
@@ -525,7 +526,7 @@ void ApiPocCmd_10msRenew(void)
       break;
     case 0x81://组成员列表
       ucId=COML_AscToHex(pBuf+2, 0x02);
-      PocCmdDrvobj.getting_user_all_done_flag=2;
+      //PocCmdDrvobj.getting_user_all_done_flag=2;
       if(ucId==0x01)//如果成员不在线则不获取群组名
       {
         PocCmdDrvobj.offline_user_count++;
