@@ -30,6 +30,7 @@ void Task_login_progress(void)
     //api_lcd_pwr_on_hint(14,2,GBK,"-1");
     if(AtCmdDrvobj.Msg.Bits.bSimCardIn==1)//已插卡
     {
+      U1C_test_mode();//是否进入美版测试模式
       cmvlc_and_clvlc_spk_mic_gain_selection();
       VOICE_Play(ABELL);
       DEL_SetTimer(0,200);
@@ -226,14 +227,15 @@ void Task_PowerOff(void)
 
 void login_step_3(void)
 {
-      cmvlc_and_clvlc_spk_mic_gain_selection();
-      ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
-      ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
-      ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
-      ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
-      ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
-      VOICE_Play(LoggingIn);
-      DISPLAY_Show(d_LoggingIn);
+  U1C_test_mode();//是否进入美版测试模式
+  cmvlc_and_clvlc_spk_mic_gain_selection();
+  ApiPocCmd_WritCommand(PocComm_set_tone_volume,0,0);//打开POC应用
+  ApiAtCmd_WritCommand(ATCOMM_ZPAS,0,0);//查询模块网络状态
+  ApiPocCmd_WritCommand(PocComm_OpenPOC,0,0);//打开POC应用
+  ApiPocCmd_WritCommand(PocComm_SetParam,0,0);//配置登录账号密码、IP
+  ApiPocCmd_WritCommand(PocComm_SetURL,0,0);//设置URL
+  VOICE_Play(LoggingIn);
+  DISPLAY_Show(d_LoggingIn);
 }
 
 void spk_control(void)

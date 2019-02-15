@@ -70,6 +70,7 @@ typedef struct{
   u8 boot_network_mode;
   u8 clvlc_spk_gain;
   u8 cmvlc_mic_gain;
+  u8 test_mode;//美版模块测试专用标志位，美版模块需进入特殊状态才能在国内正常使用
   //u8 testbuf[20];
   Key3_OptionType Key3Option;
   KEY_TOP_TYPE key_top_option;
@@ -116,6 +117,7 @@ extern void ApiCaretCmd_10msRenew(void);
 extern void ApiAtCmd_10msRenew(void);
 extern void boot_network_mode_selection(void);
 extern void cmvlc_and_clvlc_spk_mic_gain_selection(void);
+extern void U1C_test_mode(void);//是否进入美版测试状态
 
 extern u32  CHAR_TO_Digital(u8 * pBuf, u8 Len);
 extern void  Digital_TO_CHAR(u8 * pBuf, u32 data, u8 Len);

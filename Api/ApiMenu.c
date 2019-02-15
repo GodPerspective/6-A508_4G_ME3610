@@ -147,40 +147,40 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
     }
     else
     {
-      //换算并显示经度
-      Buf1[0]=0xce;
-      Buf1[1]=0xb3;
-      Buf1[2]=0xb6;
-      Buf1[3]=0xc8;
-      Buf1[4]=0x3a;
-      COML_DecToAsc(poc_latitude_integer(), Buf1+5);
-      COML_StringReverse(2,Buf1+5);
-      Buf1[7]=0x2e;
-      COML_DecToAsc(poc_latitude_float(), Buf1+8);
-      COML_StringReverse(6,Buf1+8);
-      Buf1[14]='\0';
-      Buf1[15]='\0';
-      Buf1[16]='\0';
-      Buf1[17]='\0';
-      Buf1[18]='\0';
-      api_lcd_pwr_on_hint(0,0,GBK,Buf1);
-      //换算并显示纬度
-      Buf2[0]=0xbe;
-      Buf2[1]=0xad;
-      Buf2[2]=0xb6;
-      Buf2[3]=0xc8;
-      Buf2[4]=0x3a;
-      COML_DecToAsc(poc_longitude_integer(), Buf2+5);
-      COML_StringReverse(3,Buf2+5);
-      Buf2[8]=0x2e;
-      COML_DecToAsc(poc_longitude_float(), Buf2+9);
-      COML_StringReverse(6,Buf2+9);
-      Buf2[15]='\0';
-      Buf1[16]='\0';
-      Buf1[17]='\0';
-      Buf1[18]='\0';
-      Buf1[19]='\0';
-      api_lcd_pwr_on_hint(0,2,GBK,Buf2);
+        //换算并显示经度
+        Buf1[0]=0xce;
+        Buf1[1]=0xb3;
+        Buf1[2]=0xb6;
+        Buf1[3]=0xc8;
+        Buf1[4]=0x3a;
+        COML_DecToAsc(poc_latitude_integer(), Buf1+5);
+        COML_StringReverse(2,Buf1+5);
+        Buf1[7]=0x2e;
+        COML_DecToAsc(poc_latitude_float(), Buf1+8);
+        COML_StringReverse(6,Buf1+8);
+        Buf1[14]='\0';
+        Buf1[15]='\0';
+        Buf1[16]='\0';
+        Buf1[17]='\0';
+        Buf1[18]='\0';
+        api_lcd_pwr_on_hint(0,0,GBK,Buf1);
+        //换算并显示纬度
+        Buf2[0]=0xbe;
+        Buf2[1]=0xad;
+        Buf2[2]=0xb6;
+        Buf2[3]=0xc8;
+        Buf2[4]=0x3a;
+        COML_DecToAsc(poc_longitude_integer(), Buf2+5);
+        COML_StringReverse(3,Buf2+5);
+        Buf2[8]=0x2e;
+        COML_DecToAsc(poc_longitude_float(), Buf2+9);
+        COML_StringReverse(6,Buf2+9);
+        Buf2[15]='\0';
+        Buf1[16]='\0';
+        Buf1[17]='\0';
+        Buf1[18]='\0';
+        Buf1[19]='\0';
+        api_lcd_pwr_on_hint(0,2,GBK,Buf2);
     }
     break;
   case NativeInfoMenu:

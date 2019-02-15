@@ -248,6 +248,19 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     PocCmdDrvobj.Position.latitude_integer = beidou_latitude_degree();//度
     PocCmdDrvobj.Position.latitude_float = (beidou_latitude_minute()*10000+beidou_latitude_second())*10/6;//小数位合并换算
 #endif
+    
+#if 1
+    Digital_TO_CHAR(&gps_info_buf[0],PocCmdDrvobj.Position.latitude_integer,3);
+    gps_info_buf[2] = 0x2E;
+    Digital_TO_CHAR(&gps_info_buf[3],(u32)(PocCmdDrvobj.Position.latitude_float/10),5);//转换格式二合一
+    gps_info_buf[8] = 0x3b;
+    Digital_TO_CHAR(&gps_info_buf[9],PocCmdDrvobj.Position.longitude_integer,2);
+    gps_info_buf[12] = 0x2E;
+    Digital_TO_CHAR(&gps_info_buf[13],(u32)(PocCmdDrvobj.Position.longitude_float/10),5);//经度Longitude换算+转换格式二合一
+    
+    CHAR_TO_DIV_CHAR(gps_info_buf, PocCmdDrvobj.gps_info_report, 18);//20
+    DrvGD83_UART_TxCommand(PocCmdDrvobj.gps_info_report,strlen((char const *)PocCmdDrvobj.gps_info_report));
+#else
     Digital_TO_CHAR(&gps_info_buf[0],PocCmdDrvobj.Position.latitude_integer,2);
     gps_info_buf[2] = 0x2E;
     Digital_TO_CHAR(&gps_info_buf[3],PocCmdDrvobj.Position.latitude_float,6);//转换格式二合一
@@ -261,6 +274,7 @@ void ApiPocCmd_WritCommand(PocCommType id, u8 *buf, u16 len)
     PocCmdDrvobj.gps_info_report[42]='0';
     DrvGD83_UART_TxCommand(PocCmdDrvobj.gps_info_report,strlen((char const *)PocCmdDrvobj.gps_info_report));
     PocCmdDrvobj.States.gps_value_for_display_flag=TRUE;
+#endif
     break;
   case PocComm_Key://7
     DrvGD83_UART_TxCommand(buf, len);
@@ -794,45 +808,55 @@ void ApiPocCmd_10msRenew(void)
     case 0x88://通知监听群组信息
       break;
     case 0x8A://通知接收到信息
+      ucNameId=COML_AscToHex(pBuf+4,0x04);
+      if(ucNameId==0xffff)
+      {
+        //解决开机异常播报“我们好的”的BUG
+        //+POC:8a00ffffffffffffffff0000604fec4e7d5984760000
+      }
+      else
+      {
 #ifdef CHINESE
-        if(Len >= 20)//如果群组id后面还有群组名
-        {
-          PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen= (Len-20);//
-          if(PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen > APIPOC_UserName_Len)
-            {
-              PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = APIPOC_UserName_Len;
-            }
-        }
-        else//无群组名
-        {
-            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = 0x00;
-        }
-        for(i = 0x00; i<PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen; i++)
-        {
-          PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[i] = pBuf[i+20];//存入
-        }
+          if(Len >= 20)//如果群组id后面还有群组名
+          {
+            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen= (Len-20);//
+            if(PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen > APIPOC_UserName_Len)
+              {
+                PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = APIPOC_UserName_Len;
+              }
+          }
+          else//无群组名
+          {
+              PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = 0x00;
+          }
+          for(i = 0x00; i<PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen; i++)
+          {
+            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[i] = pBuf[i+20];//存入
+          }
 #else
-        if(Len >= 20)//如果群组id后面还有群组名
-        {
-          PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen= (Len-20)/2;//英文字符只存一半
-          if(PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen > APIPOC_UserName_Len)
-            {
-              PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = APIPOC_UserName_Len;
-            }
-        }
-        else//无群组名
-        {
-            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = 0x00;
-        }
-        for(i = 0x00; 2*i<PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen; i++)
-        {
-          PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[2*i] = pBuf[4*i+20];//存入
-          PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[2*i+1] = pBuf[4*i+1+20];
-        }
+          if(Len >= 20)//如果群组id后面还有群组名
+          {
+            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen= (Len-20)/2;//英文字符只存一半
+            if(PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen > APIPOC_UserName_Len)
+              {
+                PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = APIPOC_UserName_Len;
+              }
+          }
+          else//无群组名
+          {
+              PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen = 0x00;
+          }
+          for(i = 0x00; 2*i<PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.NameLen; i++)
+          {
+            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[2*i] = pBuf[4*i+20];//存入
+            PocCmdDrvobj.NameInfo.ReceiveMessagesUserName.Name[2*i+1] = pBuf[4*i+1+20];
+          }
 #endif //#ifdef CHINESE
-      PocCmdDrvobj.States.receive_sos_statas = TRUE;
-      api_lcd_pwr_on_hint(0,2,GBK,"                ");
-      api_lcd_pwr_on_hint(0,2,UNICODE,GetReceiveMessagesUserNameForDisplay());
+        PocCmdDrvobj.States.receive_sos_statas = TRUE;
+        api_lcd_pwr_on_hint(0,2,GBK,"                ");
+        api_lcd_pwr_on_hint(0,2,UNICODE,GetReceiveMessagesUserNameForDisplay());
+     }
+
       break;
     case 0x8B://通知音频播放状态
 #if 1//

@@ -1,6 +1,11 @@
 //all UTF-8 done
 #include "AllHead.h"
 
+const u8 *cTxTESTMODESETStep1     ="AT+CGDCONT=1,\"IP\",\"ctnet\"";
+const u8 *cTxTESTMODESETStep2     ="at+zsnt=6,0,0";
+const u8 *cTxTESTMODESETStep3     ="at+zband=0,0,0,10";
+const u8 *cTxQuitTestMode         ="at+zband=all,all,all,all";
+
 const u8 *cTxCLVL            ="AT+CLVL=5";//5 此指令测试设置无效
 const u8 *cTxCLVLC0           ="AT+CLVLC=0";//3
 const u8 *cTxCLVLC1           ="AT+CLVLC=1";//3
@@ -64,6 +69,7 @@ const u8 *cTxCGDCONT_SET13        ="AT+CGDCONT=1,\"IP\",\"portalnmms\"";       /
 const u8 *cTxCGDCONT_SET14        ="AT+CGDCONT=1,\"IP\",\"aycell\"";           //土耳其Aycell
 const u8 *cTxCGDCONT_SET15        ="AT+CGDCONT=1,\"IP\",\"telsim\"";           //土耳其telsim
 const u8 *cTxCGDCONT_SET16        ="AT+CGDCONT=1,\"IP\",\"Turkcell\"";         //土耳其Turkcell
+//金灿 比利时客户
 
 const u8 *cTxPOCID                      ="AT^POCID=2";
 const u8 *cTxZICCID                     ="AT+ZICCID?";
@@ -120,6 +126,7 @@ void ApiAtCmd_PowerOnInitial(void)
   AtCmdDrvobj.boot_network_mode=0;
   AtCmdDrvobj.clvlc_spk_gain=0;
   AtCmdDrvobj.cmvlc_mic_gain=0;
+  AtCmdDrvobj.test_mode=0;//美版模块测试专用标志位，美版模块需进入特殊状态才能在国内正常使用
   AtCmdDrvobj.Key3Option=Key3_OptionZero;
   AtCmdDrvobj.key_top_option=REMOTE_AND_LOCAL_ALARM;
   AtCmdDrvobj.punch_the_clock_gps_key_press_flag=FALSE;
@@ -137,6 +144,7 @@ void ApiAtCmd_PowerOnInitial(void)
   FILE_Read(0x248,1,&(AtCmdDrvobj.boot_network_mode));//开机默认网络模式
   FILE_Read(0x249,1,&(AtCmdDrvobj.clvlc_spk_gain));//spk音量增益
   FILE_Read(0x24A,1,&(AtCmdDrvobj.cmvlc_mic_gain));//mic咪头增益
+  FILE_Read(0x23B,1,&(AtCmdDrvobj.test_mode));//美版模块测试专用标志位，美版模块需进入特殊状态才能在国内正常使用
   /*switch(AtCmdDrvobj.language_value)
   {
   case 0:
@@ -745,6 +753,26 @@ void cmvlc_and_clvlc_spk_mic_gain_selection(void)
   }
 }
 
+
+//美版模块测试专用标志位，美版模块需进入特殊状态才能在国内正常使用
+void U1C_test_mode(void)//是否进入美版测试状态
+{
+  switch(AtCmdDrvobj.test_mode)
+  {
+  case 0:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxQuitTestMode, strlen((char const*)cTxQuitTestMode));
+    break;
+  case 1:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxTESTMODESETStep1, strlen((char const*)cTxTESTMODESETStep1));
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxTESTMODESETStep2, strlen((char const*)cTxTESTMODESETStep2));
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxTESTMODESETStep3, strlen((char const*)cTxTESTMODESETStep3));
+    break;
+  default:
+    ApiAtCmd_WritCommand(ATCOMM_Test,(u8*)cTxQuitTestMode, strlen((char const*)cTxQuitTestMode));
+    break;
+  }
+}
+
 u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
 {
 	u8 i;
@@ -752,7 +780,15 @@ u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
 	for(i = 0; i < Len; i++)
 	{
 		buf *= 10;
-		buf += (pBuf[i] - 0x30);
+                if(pBuf[i]>=0x30&&pBuf[i]<=0x39)
+                {
+                  buf += (pBuf[i] - 0x30);
+                }
+                else
+                {
+                  buf += (0x30 - 0x30);
+                }
+		
 	}
 	return buf;
 }

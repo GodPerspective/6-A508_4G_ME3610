@@ -134,7 +134,7 @@ void main_all_init(void)
   api_disp_icoid_output( eICO_IDMESSAGE, TRUE, TRUE);//图标：0格信号
   api_disp_icoid_output( eICO_IDSPEAKEROff, TRUE, TRUE);//图标：X-无信号
   api_disp_icoid_output( eICO_IDBATT, TRUE, TRUE);//图标：0格电池
-  
+  api_disp_icoid_output( eICO_IDTemper, TRUE, TRUE);//免提模式
   
   //ApiAtCmd_WritCommand(ATCOMM_RESET,(void*)0, 0);
 }
