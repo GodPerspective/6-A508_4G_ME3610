@@ -141,12 +141,13 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
   case GpsInfoMenu:
      api_lcd_pwr_on_hint(0,0,GBK,"                ");//清屏
      api_lcd_pwr_on_hint(0,2,GBK,"                ");//清屏
-    if(delay_gps_value_for_display_flag2()==FALSE)
-    {
-      DISPLAY_Show(d_longitude_and_latitude0);
-    }
-    else
-    {
+     //if(delay_gps_value_for_display_flag2()==FALSE)
+      if(beidou_valid()==FALSE)
+      {
+        DISPLAY_Show(d_longitude_and_latitude0);
+      }
+      else
+      {
         //换算并显示经度
         Buf1[0]=0xce;
         Buf1[1]=0xb3;
@@ -181,7 +182,7 @@ void SubmenuMenuDisplay(SubmenuMenuDisplayType id)
         Buf1[18]='\0';
         Buf1[19]='\0';
         api_lcd_pwr_on_hint(0,2,GBK,Buf2);
-    }
+      }
     break;
   case NativeInfoMenu:
     MCU_VERSIONForMenu();

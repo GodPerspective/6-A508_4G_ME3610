@@ -780,6 +780,7 @@ u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
 	for(i = 0; i < Len; i++)
 	{
 		buf *= 10;
+#if 0
                 if(pBuf[i]>=0x30&&pBuf[i]<=0x39)
                 {
                   buf += (pBuf[i] - 0x30);
@@ -788,6 +789,9 @@ u32  CHAR_TO_Digital(u8 * pBuf, u8 Len)
                 {
                   buf += (0x30 - 0x30);
                 }
+#else
+                buf += (pBuf[i] - 0x30);
+#endif
 		
 	}
 	return buf;

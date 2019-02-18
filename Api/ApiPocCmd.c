@@ -808,8 +808,8 @@ void ApiPocCmd_10msRenew(void)
     case 0x88://通知监听群组信息
       break;
     case 0x8A://通知接收到信息
-      ucNameId=COML_AscToHex(pBuf+4,0x04);
-      if(ucNameId==0xffff)
+      ucId = COML_AscToHex(pBuf+4, 0x02);
+      if(ucId==0xff)
       {
         //解决开机异常播报“我们好的”的BUG
         //+POC:8a00ffffffffffffffff0000604fec4e7d5984760000
