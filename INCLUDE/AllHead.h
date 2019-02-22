@@ -62,5 +62,5 @@
 
 //使能英文语音
 #define CHINESE
-
+//#define CONEXIS
 #endif

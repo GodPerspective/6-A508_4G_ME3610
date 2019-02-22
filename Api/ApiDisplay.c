@@ -154,7 +154,12 @@ const u8 *dp_init               = "³õÊ¼»¯...       ";//37
 const u8 *dp_2min_end_reset     = "2minÎ´µÇÂ½ÖØÆô  ";//38
 
 #else
+
+  #ifdef CONEXIS
 const u8 *dp_abell              = "     ABELL      ";//1
+  #else
+const u8 *dp_abell              = "    CONEXIS     ";//1
+  #endif
 const u8 *dp_personal_mode      = "Personal Mode   ";//2
 const u8 *dp_no_sim_card        = "No SIM Card     ";//3
 const u8 *dp_network_search     = "Network Search  ";//4
