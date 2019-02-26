@@ -17,7 +17,7 @@ const u8 *ucAlarm2                    = "00000000736f7300";
 const u8 *ucSetURL                    = "120000";
 const u8 *ucPunch_the_clock_gps       = "31000001";//定位打卡
 const u8 *ucPunch_the_clock_nfc       = "31000000";//NFC打卡
-const u8 *ucSetToneVolume             = "2500000200";
+const u8 *ucSetToneVolume             = "2500000070";
 PocCmdDrv PocCmdDrvobj;
 
 
