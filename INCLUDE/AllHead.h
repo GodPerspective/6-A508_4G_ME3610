@@ -61,6 +61,6 @@
 #include "ApiLED.h"
 
 //使能英文语音
-#define CHINESE
+//#define CHINESE
 //#define CONEXIS
 #endif
