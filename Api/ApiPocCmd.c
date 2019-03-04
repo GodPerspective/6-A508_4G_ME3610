@@ -38,6 +38,7 @@ void ApiPocCmd_PowerOnInitial(void)
   PocCmdDrvobj.States.ToneState = FALSE;
   PocCmdDrvobj.States.ToneState_Intermediate = FALSE;
   PocCmdDrvobj.States.receive_sos_statas= FALSE;
+  PocCmdDrvobj.States.busy_tone_statas=FALSE;
   PocCmdDrvobj.States.first_enter_into_group_flag=FALSE;
   PocCmdDrvobj.States.gps_value_for_display_flag=FALSE;
   //群组未做初始化
@@ -417,7 +418,12 @@ void ApiPocCmd_10msRenew(void)
       ucId = COML_AscToHex(pBuf+2, 0x02);
       if(ucId==0x00)
       {
+        if(PocCmdDrvobj.States.busy_tone_statas==TRUE)//在0c出清除此标志位
+        {
+          BEEP_SetOutput(BEEP_IDPowerOff,OFF,0x00,TRUE);
+        }
         PocCmdDrvobj.States.KeyPttState=3;//KeyPttState 0：未按PTT 1:按下ptt瞬间  2：按住PTT状态 3：松开PTT瞬间
+        PocCmdDrvobj.States.busy_tone_statas=FALSE;
       }
       break;
     case 0x0D://获取群组信息
@@ -922,7 +928,17 @@ void ApiPocCmd_10msRenew(void)
     case 0x8C://通知接收其他终端发来的消息
       break;
     case 0x96:
-      PocCmdDrvobj.States.ToneState_Intermediate=TRUE;//-----------------------延迟0.5s关闭喇叭
+      ucId = COML_AscToHex(pBuf+4, 0x02);
+      if(ucId==0x02)//繁忙音
+      {
+          PocCmdDrvobj.States.busy_tone_statas=TRUE;//在0c出清除此标志位
+          BEEP_SetOutput(BEEP_IDPowerOff,ON,0x00,TRUE);
+      }
+      else
+      {
+        BEEP_SetOutput(BEEP_IDPowerOff,OFF,0x00,TRUE);
+        PocCmdDrvobj.States.ToneState_Intermediate=TRUE;//-----------------------延迟0.5s关闭喇叭
+      }
       break;
     case 0x9D://打卡回复(附加消息为打卡成功原因或失败原因)
       AtCmdDrvobj.punch_the_clock_gps_key_press_flag=FALSE;

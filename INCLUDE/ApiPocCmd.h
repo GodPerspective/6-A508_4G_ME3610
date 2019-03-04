@@ -87,6 +87,7 @@ typedef struct{
     bool ToneState;
     bool ToneState_Intermediate;
     bool receive_sos_statas;
+    bool busy_tone_statas;
     bool first_enter_into_group_flag;
     bool gps_value_for_display_flag;
   }States;

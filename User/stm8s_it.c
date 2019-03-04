@@ -86,7 +86,7 @@ INTERRUPT_HANDLER(SPI_IRQHandler, 10)
 INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
 {
 #if 1
-  if(poc_receive_sos_statas()==TRUE)
+  if(poc_receive_sos_statas()==TRUE)//报警提示音
   {
     tone_count++;
     if(tone_count>=7)
@@ -95,6 +95,15 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
       Test_PWM_LED(); //WCDMA
     }
   }
+/*  else if(PocCmdDrvobj.States.busy_tone_statas==TRUE)繁忙提示音
+  {
+    tone_count++;
+    if(tone_count>=7)
+    {
+      tone_count=0;
+      Test_PWM_LED(); //
+    }
+  }*/
   else
   {
     tone_count=0;
